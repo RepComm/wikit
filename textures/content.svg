@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg8"
+   version="1.1"
+   viewBox="0 0 35.277779 35.277777"
+   height="100pt"
+   width="100pt"
+   sodipodi:docname="content.svg"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1366"
+     inkscape:window-height="705"
+     id="namedview2237"
+     showgrid="false"
+     inkscape:zoom="5.006316"
+     inkscape:cx="107.0637"
+     inkscape:cy="55.505305"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg8" />
+  <title
+     id="title4528">Default</title>
+  <defs
+     id="defs2">
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect2241"
+       is_visible="true" />
+  </defs>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Default</dc:title>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Jonathan Crowder</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:description>A default for inkscape</dc:description>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <path
+     style="fill:#dfb48e;fill-opacity:0.43921569;stroke:none;stroke-width:1.10671175px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="M 103.96484,0 88.625,2.3496094 67.341797,1.4765625 52.333984,3.1679688 36.566406,0.953125 23.257812,2.3652344 1.8320312,2.1269531 0,10.046875 8.5859375,19.537109 0.87109375,14.652344 1.921875,30.105469 l -0.4472656,8.001953 2.75,-0.03711 -2.03125,2.857422 -1.1757813,26.519532 10.1152339,3.855468 -6.3730464,-0.673828 -1.6855468,6.796875 0.4570312,28.906249 1.4375,15.81445 6.042969,4.8379 -3.558594,3.125 17.382813,1.42578 12.015624,0.2207 18.462891,-2.04883 8.611328,0.72656 L 82,133.33398 l 3.572266,-2.27929 8.539062,-2.35742 18.148442,0.34961 9.39257,-4.12696 10.06641,3.39453 -3.00781,-9.40429 3.14258,-22.601566 -0.88086,-22.652344 -2.45118,-9.064453 2.875,-12.271485 -9.93359,5.5 11.87109,-9.501953 -3.38086,-8.351562 -3.00781,-4.880859 4.21289,-9.234376 -0.75586,-17.0507808 -5.55078,-7.2910156 z m -88.542965,12.707031 7.746094,5.179688 10.240234,-1.744141 -11.560547,3.371094 z m 60.994141,32.664063 4.52539,0.476562 -1.548828,0.953125 z m 36.523434,11.984375 -3.73047,3.951172 -10.074214,1.40625 z m -51.216794,5.068359 2.595703,1.597656 -7.589843,0.798828 z m -8.590452,1.796442 1.199218,0.5996 -2.396484,1.99805 -5.193359,-1.99805 z m 77.102606,-43.345656 -1.79687,3.39649 -2.79688,2.59765 0.79883,-3.5957 -3.99414,-1.39844 z M 8.1892568,50.438819 l 3.9960932,1.39648 -1,1.79883 -2.5957032,-1.19922 -0.798828,2.19727 -4.794922,-3.39453 2.396484,0.39844 z M 108.4639,7.0934124 l 0.99805,2.19726 -0.79883,3.5957096 -1.19922,-2.79688 z"
+     transform="scale(0.26458335)"
+     id="path2243"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" />
+</svg>

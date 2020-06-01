@@ -1,0 +1,44 @@
+body {
+    margin:0px;
+    width:100vw;
+    height:100vh;
+    overflow:hidden;
+    background-color:rgb(82, 80, 78);
+    display:flex;
+    flex-direction:column;
+    color:white;
+}
+.animsmooth {
+    transition-duration: 0.25s;
+    transition-timing-function: ease-in-out;
+    transition-property: all;
+}
+#content {
+    flex:30;
+    display:flex;
+}
+#left {
+    flex:1;
+    display:flex;
+}
+#middle {
+    flex:3;
+    display:block;
+    flex-wrap:nowrap;
+}
+#right {
+    flex:1;
+    display:flex;
+}
+.render-container {
+    width:100%;
+    height:100%;
+    display:block;
+    background-color: #646464;
+}
+.render-canvas {
+    width:100%;
+    height:100%;
+    position: absolute;
+    cursor:pointer;
+}

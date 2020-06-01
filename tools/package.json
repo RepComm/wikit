@@ -1,0 +1,34 @@
+{
+  "installed": [
+    {
+      "name": "default",
+      "file": "brush.js",
+      "enabled": true
+    },
+    {
+      "name": "pencil",
+      "file": "pencil.js",
+      "enabled": false
+    },
+    {
+      "name": "brush",
+      "file": "brush.js",
+      "enabled": false
+    },
+    {
+      "name": "eraser",
+      "file": "eraser.js",
+      "enabled": false
+    },
+    {
+      "name": "gradient",
+      "file": "gradient.js",
+      "enabled": false
+    },
+    {
+      "name": "layers",
+      "file": "layers.js",
+      "enabled": false
+    }
+  ]
+}

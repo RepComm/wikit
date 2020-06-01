@@ -1,0 +1,22 @@
+
+.choicebox {
+    position:absolute;
+    top:20%;
+    left:20%;
+    width:60%;
+    height:60%;
+    padding:1em;
+    background-color:rgb(59, 59, 59);
+    border-radius: 0.5em;
+    color:white;
+    
+}
+.choicebox-option {
+
+}
+.choicebox-tooltip {
+    /* position:absolute; */
+    background-color:rgb(59, 59, 59);
+    border-radius: 0.5em;
+    color:white;
+}
