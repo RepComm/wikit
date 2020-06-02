@@ -124,10 +124,24 @@ export class Brush extends Tool {
   }
 }
 
+/**@author Jonathan Crowder
+ * An implementation for managing image filter kernels
+ */
 export class Kernel {
-  constructor(width = 3, height = 3) {
-    this.width = width;
-    this.height = height;
+  constructor(radius=3) {
+    /**@type {number} radius of the kernel [internal]*/
+    this._radius = radius;
+    this.radius = radius;
+
+    this.width = radius;
+    this.height = radius;
+
+    //Equation used to calculate the kernel in normalized (0 - 1) 2d space
+    this.equation = (u, v)=>1; //Regular blur
+    
+    /**@type {"eq"|"raw"} Method of kernel data*/
+    this.mode = "eq";
+
     this.data = new Float32Array(this.width * this.height);
     this.result = {
       r: new Int32Array(this.width * this.height),
@@ -136,12 +150,88 @@ export class Kernel {
       a: new Int32Array(this.width * this.height)
     };
   }
+  /**Normalizes the kernel's data
+   * This helps prevent color clipping and overscaling
+   */
   normalize() {
     let ratio = Utils.float32Max(this.data) / 1;
 
     for (let i=0; i < this.data.length; i++) {
-      this.data[i] = (this.data[i] / ratio)*2;
+      this.data[i] = (this.data[i] / ratio);
     }
+  }
+  /**Use an equation as the kernel
+   * @param {fEqCallback} fEq
+   * @callback fEqCallback
+   * @param {number} u noralized x coordinate
+   * @param {number} v normalized y coordiante
+   * @returns {number} output
+   */
+  useEquation (fEq) {
+    this.equation = fEq;
+    this.mode = "eq";
+  }
+  /**Use a raw set of floats for the kernel
+   * Warning, this will not recalculate when rescaled
+   * You will need to set this again will new, properly sized data when modifying radius
+   * @param {Float32Array} array data
+   */
+  useRaw (array) {
+    this.mode = "raw";
+    this.data = array;
+  }
+  /**Gets the radius of the kernel
+   */
+  get radius () {
+    return this._radius;
+  }
+
+  /**Recalculates the data based on the kernel equation
+   */
+  recalcDataFromEq () {
+    this.data = new Float32Array(this.width * this.height);
+    let krnPixelIndex = 0;
+    let u = 0;
+    let v = 0;
+    for (let x=0; x<this.width; x++) {
+      for (let y=0; y<this.height; y++) {
+        krnPixelIndex = Utils.TwoDimToIndex(x, y, this.width);
+        u = (x/this.width);
+        if (u === 0) u = 0.01;
+        v = (y/this.height);
+        if (v === 0) v = 0.01;
+        this.data[krnPixelIndex] = this.equation(u, v);
+      }
+    }
+  }
+
+  /**Set the radius of the kernel
+   * This will recalculate kernel data
+   * @param {number} r radius
+   */
+  set radius (r) {
+    this._radius = r;
+    this.width = this._radius;
+    this.height = this._radius;
+
+    if (this.mode === "eq") {
+      this.recalcDataFromEq();
+    } else if (this.mode === "raw") {
+      console.warn("Rescaling radius in raw mode, please useRaw again");
+    }
+  }
+
+  logData () {
+    let msg = "";
+    let krnPixelIndex = 0;
+    for (let y=0; y<this.height; y++) {
+      for (let x=0; x<this.width; x++) {
+        krnPixelIndex = Utils.TwoDimToIndex(x, y, this.width);
+        msg += this.data[krnPixelIndex].toFixed(2) + ", ";
+      }
+      msg += "\n\n";
+    }
+    console.log(msg);
   }
 }
 
@@ -171,13 +261,14 @@ export class KernelFilter extends Filter {
    */
   constructor(name, kernel) {
     super(name);
+
     /**@type {Kernel}*/
     this.kernel;
     if (kernel) {
       this.kernel = kernel;
     } else {
-      this.kernel = new Kernel(3, 3);
-      this.kernel.data.set([
+      this.kernel = new Kernel(3);
+      this.kernel.useRaw([
         0, 0, 0,
         0, 1, 0,
         0, 0, 0
@@ -237,9 +328,9 @@ export class KernelFilter extends Filter {
           for (let ky = 0; ky < this.kernel.height; ky++) {
             nx = sx + (kx - kwh);
             ny = sy + (ky - khh);
-            if (nx < 0 || nx > sw || ny < 0 || ny > sh) continue;
+            if (nx < 0 || nx > sw-1 || ny < 0 || ny > sh-1) continue;
             //Lay the kernel centered over the current source image pixel
-            srcPixelIndex = Utils.TwoDimToIndex(sx + (kx - kwh), sy + (ky - khh), sw) * 4;
+            srcPixelIndex = Utils.TwoDimToIndex(nx, ny, sw) * 4;
 
             krnPixelIndex = Utils.TwoDimToIndex(kx, ky, this.kernel.width);
 
@@ -365,7 +456,7 @@ export class MultiKernelFilter extends Filter {
           for (let ky = 0; ky < this.kernels[0].height; ky++) {
             nx = sx + (kx - kwh);
             ny = sy + (ky - khh);
-            if (nx < 0 || nx > sw || ny < 0 || ny > sh) continue;
+            if (nx < 0 || nx > sw-1 || ny < 0 || ny > sh-1) continue;
             //Lay the kernel centered over the current source image pixel
             srcPixelIndex = Utils.TwoDimToIndex(sx + (kx - kwh), sy + (ky - khh), sw) * 4;
 
