@@ -27,7 +27,7 @@ class DefaultBrush extends Brush {
     };
   }
 
-  onStroke(x, y, lx, ly) {
+  onStroke(ctx, x, y, lx, ly) {
     this.pointDist = dist(x, y, lx, ly);
     this.angle = angle(x, y, lx, ly);
     this.perpendicular = this.angle + Math.PI / 2;
@@ -38,7 +38,20 @@ class DefaultBrush extends Brush {
     this.points.tr.x = x - (Math.cos(this.perpendicular) * Brush.width);
     this.points.tr.y = y - (Math.sin(this.perpendicular) * Brush.width);
 
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(this.points.tl.x, this.points.tl.y); //Top left
+    ctx.lineTo(this.points.tr.x, this.tr.y); //Top right
+    ctx.lineTo(this.points.br.x, this.points.br.y); //Bottom right
+    ctx.lineTo(this.points.bl.x, this.points.bl.y); //Bottom left
+    ctx.closePath();
+
+    ctx.globalAlpha = Brush.opacity;
+    ctx.fillStyle = Brush.fgColor;
     
+    ctx.fill();
+
+    ctx.restore();
   }
 }
 

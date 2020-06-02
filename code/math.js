@@ -46,6 +46,18 @@ let Utils = {
     } else {
       return n + to - resto;
     }
+  },
+  /**Maximum in an array of float 32s
+   * @param {Float32Array} array 
+   */
+  float32Max (array) {
+    let result = -Infinity;
+    let current;
+    for (let i=0; i<array.length; i++) {
+      current = Math.abs(array[i]);
+      if (current > result) result = current;
+    }
+    return result;
   }
 };
 

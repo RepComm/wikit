@@ -6,6 +6,21 @@
       "enabled": true
     },
     {
+      "name": "default",
+      "file": "blurfilter.js",
+      "enabled": true
+    },
+    {
+      "name": "default",
+      "file": "edgefilter.js",
+      "enabled": true
+    },
+    {
+      "name": "default",
+      "file": "grayscalefilter.js",
+      "enabled": true
+    },
+    {
       "name": "pencil",
       "file": "pencil.js",
       "enabled": false

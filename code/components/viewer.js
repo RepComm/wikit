@@ -34,6 +34,7 @@ export class Layer {
 
 export class Viewer {
   constructor() {
+    this.drawRect = undefined;
     this.container = document.createElement("div");
     this.container.classList.add("render-container");
 
@@ -64,10 +65,13 @@ export class Viewer {
     this.layers = new Array();
     this.activeLayerIndex = 0;
     this.activeIsOutlined = true;
-    this.activeLayer = this.layers[this.activeLayerIndex];
+    this.activeLayer = undefined;
 
     this.layersElement = document.createElement("div");
     this.layersElement.classList.add("layers");
+
+    /**@type {Array<Layer>} active layer stack*/
+    this.activeLayerStack = new Array();
   }
 
   renderLayers() {
@@ -195,10 +199,13 @@ export class Viewer {
       l = new Layer(name, this.drawRect.width, this.drawRect.height, 0, 0, imageBitmap);
     }
     this.layers.push(l);
-    if (!this.activeLayer) this.activeLayer = l;
-    this.saveActiveLayer(() => {
-      this.renderLayers();
-    });
+    if (!this.activeLayer) {
+      this.setActiveLayer(l);
+    } else {
+      this.saveActiveLayer(() => {
+        this.renderLayers();
+      });
+    }
     return l;
   }
 
@@ -206,6 +213,10 @@ export class Viewer {
    * Typically called before switching active layers to avoid loosing data
    */
   saveActiveLayer(cb, fixTransparency = false) {
+    if (!this.activeLayer) {
+      if (cb) cb();
+      return;
+    }
     if (fixTransparency) {
       let old = this.activeLayer.opacity;
       this.activeLayer.opacity = 1;
@@ -227,34 +238,92 @@ export class Viewer {
     });
   }
 
-  setActiveLayer(ind) {
-    if (ind === this.activeLayerIndex) {
-      return false;
+  /**Set the active layer by its ID
+   * @param {Layer} layer 
+   */
+  setActiveLayer(layer) {
+    if (!this.layers.includes(layer)) throw "Layer is not contained in viewer";
+    if (this.activeLayer) {
+      this.saveActiveLayer(() => {
+        this.activeLayer = layer;
+        this.activeLayerIndex = this.getLayerIndex(layer);
+        this.renderLayers();
+      });
+    } else {
+      this.activeLayer = layer;
+      this.activeLayerIndex = this.getLayerIndex(layer);
+      this.renderLayers();
     }
+  }
+
+  /**Set the active layer by its index
+   * @param {number} ind 
+   */
+  setActiveLayerByIndex(ind) {
+    if (ind === this.activeLayerIndex) return false;
     if (ind > this.layers.length - 1 || ind < 0) {
       ind = 0;
       return false;
     }
-    this.saveActiveLayer(() => {
-      this.activeLayerIndex = ind;
-      this.activeLayer = this.layers[this.activeLayerIndex];
-      this.renderLayers();
-    });
+    this.setActiveLayer(this.getLayerByIndex(ind));
     return true;
   }
 
+  /**Remember which layer is currently active
+   * @param {Layer} layer 
+   */
+  pushActiveLayer() {
+    this.activeLayerStack.push(this.activeLayer);
+  }
+
+  /**Reset the current active layer to be one we pushed earlier
+   * If no layer has been previously pushed this will throw
+   */
+  popActiveLayer() {
+    if (this.activeLayerStack.length < 1) throw "Layer stack is empty, cannot pop";
+    this.saveActiveLayer(() => {
+      this.setActiveLayerByIndex(
+        this.getLayerIndex(
+          this.activeLayerStack.pop()
+        )
+      );
+      this.renderLayers();
+    });
+  }
+
   getLayerByName(name) {
-    let ind = this.getLayerIndexByName(name);
-    if (ind === undefined) return undefined;
-    return this.layers[
-      this.getLayerIndexByName(name)
-    ];
+    this.layers.forEach((l) => {
+      if (l.name === name) return l;
+    });
+    return undefined;
   }
 
   getLayerIndexByName(name) {
-    for (let i = 0; i < this.layers.length; i++) {
-      if (this.layers[i].name === name) return i;
-    }
+    this.layers.forEach((l, i) => {
+      if (l.name === name) return i;
+    });
     return undefined;
+  }
+
+  /**Get a layer's index by its instance
+   * @param {Layer} layer instance
+   * @returns {number} index
+   */
+  getLayerIndex(layer) {
+    let result = undefined;
+    this.layers.forEach((l, i) => {
+      if (layer === l) {
+        result = i;
+      }
+    });
+    return result;
+  }
+
+  /**Get a layer by its index/id
+   * @param {number} ind index of the layer
+   * @returns {Layer}
+   */
+  getLayerByIndex(ind) {
+    return this.layers[ind];
   }
 }

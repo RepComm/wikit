@@ -54,18 +54,22 @@ menuFile.sub("Open (CTRL+O)", () => {
         let img = new Image();
         img.addEventListener("load", (evt) => {
           openOptionsBox.trigger((choice) => {
+            let l;
             switch (choice) {
               case "nimage":
                 //TODO - free layers and draw main as new image
                 break;
               case "alayer":
+                if (viewer.layers.length < 0) {
+                  viewer.addLayer("main");
+                }
                 viewer.ctxActive.drawImage(img, 0, 0);
                 break;
               case "nlayer":
                 let name = files.item(0).name;
                 createImageBitmap(img).then((ib) => {
-                  viewer.addLayer(name, ib);
-                  viewer.setActiveLayer(viewer.getLayerIndexByName(name));
+                  l = viewer.addLayer(name, ib);
+                  viewer.setActiveLayer(l);
                 });
                 break;
             }
@@ -127,23 +131,7 @@ fetch("./tools/package.json").then(resp => resp.json().then((pkg) => {
   for (let toolInfo of pkg.installed) {
     if (toolInfo.enabled) {
       import("../tools/" + toolInfo.name + "/" + toolInfo.file).then((mod) => {
-        console.log(mod.default);
         mod.default(api);
-
-        // console.log("imported", mod);
-        // let tool = toolbox.addTool(
-        //   new mod.default(
-        //     "./tools/" + toolInfo.name,
-        //     api
-        //   )
-        // );
-        // tool.element.addEventListener("click", (evt) => {
-        //   removeChildren(get("right"), "optionsbox");
-        //   if (tool.getOptions()) {
-        //     tool.getOptions().mount(get("right"));
-        //     toolbox.setCurrentTool(tool.name);
-        //   }
-        // });
       }).catch((ex) => {
         // console.log("Error while importing module", ex);
         throw ex;
