@@ -10,8 +10,8 @@ Implemented filters (no buttons to push yet)
 
 Implemented classes:
 - Kernel
-- - Tool
-- - - Filter
-- - - - KernelFilter
-- - - - MultiKernelFilter
-- - - Brush
+- Tool
+- - Filter
+- - - KernelFilter
+- - - MultiKernelFilter
+- - Brush
