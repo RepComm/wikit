@@ -128,7 +128,7 @@ export class Brush extends Tool {
  * An implementation for managing image filter kernels
  */
 export class Kernel {
-  constructor(radius=3) {
+  constructor(radius = 3) {
     /**@type {number} radius of the kernel [internal]*/
     this._radius = radius;
     this.radius = radius;
@@ -137,8 +137,8 @@ export class Kernel {
     this.height = radius;
 
     //Equation used to calculate the kernel in normalized (0 - 1) 2d space
-    this.equation = (u, v)=>1; //Regular blur
-    
+    this.equation = (u, v) => 1; //Regular blur
+
     /**@type {"eq"|"raw"} Method of kernel data*/
     this.mode = "eq";
 
@@ -156,7 +156,7 @@ export class Kernel {
   normalize() {
     let ratio = Utils.float32Max(this.data) / 1;
 
-    for (let i=0; i < this.data.length; i++) {
+    for (let i = 0; i < this.data.length; i++) {
       this.data[i] = (this.data[i] / ratio);
     }
   }
@@ -167,7 +167,7 @@ export class Kernel {
    * @param {number} v normalized y coordiante
    * @returns {number} output
    */
-  useEquation (fEq) {
+  useEquation(fEq) {
     this.equation = fEq;
     this.mode = "eq";
   }
@@ -176,29 +176,34 @@ export class Kernel {
    * You will need to set this again will new, properly sized data when modifying radius
    * @param {Float32Array} array data
    */
-  useRaw (array) {
+  useRaw(array) {
     this.mode = "raw";
     this.data = array;
   }
   /**Gets the radius of the kernel
    */
-  get radius () {
+  get radius() {
     return this._radius;
   }
 
   /**Recalculates the data based on the kernel equation
    */
-  recalcDataFromEq () {
+  recalcDataFromEq() {
     this.data = new Float32Array(this.width * this.height);
+    this.result.r = new Uint32Array(this.width * this.height);
+    this.result.g = new Uint32Array(this.width * this.height);
+    this.result.b = new Uint32Array(this.width * this.height);
+    this.result.a = new Uint32Array(this.width * this.height);
+
     let krnPixelIndex = 0;
     let u = 0;
     let v = 0;
-    for (let x=0; x<this.width; x++) {
-      for (let y=0; y<this.height; y++) {
+    for (let x = 0; x < this.width; x++) {
+      for (let y = 0; y < this.height; y++) {
         krnPixelIndex = Utils.TwoDimToIndex(x, y, this.width);
-        u = (x/this.width);
+        u = (x / this.width);
         if (u === 0) u = 0.01;
-        v = (y/this.height);
+        v = (y / this.height);
         if (v === 0) v = 0.01;
         this.data[krnPixelIndex] = this.equation(u, v);
       }
@@ -209,7 +214,7 @@ export class Kernel {
    * This will recalculate kernel data
    * @param {number} r radius
    */
-  set radius (r) {
+  set radius(r) {
     this._radius = r;
     this.width = this._radius;
     this.height = this._radius;
@@ -221,17 +226,29 @@ export class Kernel {
     }
   }
 
-  logData () {
+  logData() {
     let msg = "";
     let krnPixelIndex = 0;
-    for (let y=0; y<this.height; y++) {
-      for (let x=0; x<this.width; x++) {
+    for (let y = 0; y < this.height; y++) {
+      for (let x = 0; x < this.width; x++) {
         krnPixelIndex = Utils.TwoDimToIndex(x, y, this.width);
         msg += this.data[krnPixelIndex].toFixed(2) + ", ";
       }
       msg += "\n\n";
     }
     console.log(msg);
+  }
+
+  /**Reduce the result to a single pixel data
+   * @param {{r:number,g:number,b:number,a:number}|undefined} pixelValue 
+   */
+  reduceResult (pixelValue) {
+    if (!pixelValue) pixelValue = {r:0,g:0,b:0,a:0};
+    pixelValue.r = this.result.r.reduce((p, c)=>p+c);
+    pixelValue.g = this.result.g.reduce((p, c)=>p+c);
+    pixelValue.b = this.result.b.reduce((p, c)=>p+c);
+    pixelValue.a = this.result.a.reduce((p, c)=>p+c);
+    return pixelValue;
   }
 }
 
@@ -241,6 +258,22 @@ export class Filter extends Tool {
    */
   constructor(name) {
     super(name);
+  }
+
+  /**Call when you want to perform this filter on a layer
+   * @param {Viewer} viewer 
+   * @param {Layer} layer 
+   * @param {boolean} toNewLayer 
+   */
+  perform(viewer, layer, toNewLayer) {
+    //Remembers which layer was active
+    viewer.pushActiveLayer();
+    //Sets a new active layer
+    viewer.setActiveLayer(layer);
+    //Tells the filter to do its thing
+    this.onProcess(viewer, layer, toNewLayer);
+    //Tells viewer to bring back the old active layer
+    viewer.popActiveLayer();
   }
 
   /**Override this function to process layer data
@@ -255,7 +288,85 @@ export class Filter extends Tool {
   }
 }
 
-export class KernelFilter extends Filter {
+export class PixelFilter extends Filter {
+  /**@param {string} name
+   */
+  constructor(name) {
+    super(name);
+
+  }
+  /**Override this function to process layer data
+   * @override
+   * @param {Viewer} viewer renderer
+   * @param {import("../../code/components/viewer.js").Layer} layer
+   * @param {boolean} toNewLayer will perform result on a new copy of the layer when true
+   * @returns {Layer} whatever layer was effected by the process
+   */
+  onProcess(viewer, layer, toNewLayer) {
+    let sw = viewer.canvasActive.width;
+    let sh = viewer.canvasActive.height;
+
+    //Get source data
+    let src = viewer.ctxActive.getImageData(0, 0, sw, sh);
+    //Create destination data
+    let dst = new ImageData(sw, sh);
+
+    //Call on image with source and destination
+    this.onImage(src, dst);
+
+    //Put the result into active
+    viewer.ctxActive.putImageData(dst, 0, 0);
+  }
+
+  /**Override this method, supplying your own
+   * @virtual
+   * @param {ImageData} srcImageData to read
+   * @param {ImageData} dstImageData to modify
+   */
+  onImage(srcImageData, dstImageData) {
+    throw "Not implemented in subclass";
+  }
+
+  /**Gets the pixel value in an imagedata by xy
+   * @param {number} x 
+   * @param {number} y 
+   * @param {ImageData} imagedata
+   * @param {{r:number,g:number,b:number,a:number}|undefined} pixel
+   * @returns {{r:number,g:number,b:number,a:number}}
+   */
+  static getPixelAt(x, y, imagedata, pixel) {
+    let ind = Utils.TwoDimToIndex(x, y, imagedata.width) * 4;
+    if (!pixel) pixel = { r: 0, g: 0, b: 0, a: 0 };
+    try {
+      pixel.r = imagedata.data[ind];
+      pixel.g = imagedata.data[ind + 1];
+      pixel.b = imagedata.data[ind + 2];
+      pixel.a = imagedata.data[ind + 3];
+    } catch (e) {
+      throw `${x},${y} out of bounds in ${imagedata}`;
+    }
+    return pixel;
+  }
+  /**Sets the pixel value in an imagedata by xy
+   * @param {number} x 
+   * @param {number} y 
+   * @param {ImageData} imagedata
+   * @returns {{r:number,g:number,b:number,a:number}}
+   */
+  static setPixelAt(x, y, imagedata, pixel) {
+    let ind = Utils.TwoDimToIndex(x, y, imagedata.width) * 4;
+    try {
+      imagedata.data[ind] = pixel.r;
+      imagedata.data[ind + 1] = pixel.g;
+      imagedata.data[ind + 2] = pixel.b;
+      imagedata.data[ind + 3] = pixel.a;
+    } catch (e) {
+      throw `${x},${y} out of bounds in ${imagedata}`;
+    }
+  }
+}
+
+export class KernelFilter extends PixelFilter {
   /**@param {string} name 
    * @param {Kernel} kernel 
    */
@@ -275,121 +386,71 @@ export class KernelFilter extends Filter {
       ]);
     }
   }
-  /**Override this function to process layer data
+
+  /**Override this method, supplying your own
    * @override
-   * @param {Viewer} viewer renderer
-   * @param {import("../../code/components/viewer.js").Layer} layer
-   * @param {boolean} toNewLayer will perform result on a new copy of the layer when true
-   * @returns {Layer} whatever layer was effected by the process
+   * @param {ImageData} srcImageData to read
+   * @param {ImageData} dstImageData to modify
    */
-  onProcess(viewer, layer, toNewLayer) {
-    viewer.pushActiveLayer();
-    viewer.setActiveLayer(layer);
-    let sw = viewer.canvasActive.width;
-    let sh = viewer.canvasActive.height;
-
-    //Get source data
-    let src = viewer.ctxActive.getImageData(0, 0, sw, sh);
-    //Source viewer
-    let srcView = new DataView(src.data.buffer);
-
-    //Create destination data
-    let dst = new ImageData(sw, sh);
-    //Destination viewer
-    let dstView = new DataView(dst.data.buffer);
+  onImage(srcImageData, dstImageData) {
+    console.log("Executes");
+    let sw = srcImageData.width;
+    let sh = srcImageData.height;
 
     //Overlap info, prevents getting out of bounds pixels
-    //Kernel width halved
     let kwh = Math.ceil(this.kernel.width / 2);
-    //Kernel height halved
     let khh = Math.ceil(this.kernel.height / 2);
 
-    //Destination pixel index
-    let dstPixelIndex = 0;
-    //Source pixel index
-    let srcPixelIndex = 0;
-    //Kernel pixel index
     let krnPixelIndex = 0;
-
     let pixelValue = { r: 0, g: 0, b: 0, a: 0 };
-
     let nx = 0;
     let ny = 0;
-
     let krnCell = 0;
 
     //Loop through source
     for (let sx = 0; sx < sw; sx++) {
       for (let sy = 0; sy < sh; sy++) {
-        dstPixelIndex = Utils.TwoDimToIndex(sx, sy, sw) * 4;
-
         //Loop through kernel
         for (let kx = 0; kx < this.kernel.width; kx++) {
           for (let ky = 0; ky < this.kernel.height; ky++) {
             nx = sx + (kx - kwh);
             ny = sy + (ky - khh);
-            if (nx < 0 || nx > sw-1 || ny < 0 || ny > sh-1) continue;
+            if (nx < 0 || nx > sw - 1 || ny < 0 || ny > sh - 1) continue;
             //Lay the kernel centered over the current source image pixel
-            srcPixelIndex = Utils.TwoDimToIndex(nx, ny, sw) * 4;
-
-            krnPixelIndex = Utils.TwoDimToIndex(kx, ky, this.kernel.width);
-
             //Get kernel at this point
+            krnPixelIndex = Utils.TwoDimToIndex(kx, ky, this.kernel.width);
             krnCell = this.kernel.data[krnPixelIndex];
 
             //Get rgba and multiply by kernel
-            pixelValue.r = srcView.getUint8(srcPixelIndex + 0) * krnCell;
-            pixelValue.g = srcView.getUint8(srcPixelIndex + 1) * krnCell;
-            pixelValue.b = srcView.getUint8(srcPixelIndex + 2) * krnCell;
-            //pixelValue.a = srcView.getUint8(srcPixelIndex + 3) * krnCell;
+            pixelValue = PixelFilter.getPixelAt(nx, ny, srcImageData, pixelValue);
+
+            pixelValue.r *= krnCell;
+            pixelValue.g *= krnCell;
+            pixelValue.b *= krnCell;
+            pixelValue.a *= krnCell;
 
             //Copy the modified pixel into the result kernel
-            this.kernel.result.r[krnPixelIndex] = pixelValue.r;
-            this.kernel.result.g[krnPixelIndex] = pixelValue.g;
-            this.kernel.result.b[krnPixelIndex] = pixelValue.b;
-            //this.kernel.result.a[krnPixelIndex] = pixelValue.a;
+            this.kernel.result.r[krnPixelIndex] = Math.floor(pixelValue.r);
+            this.kernel.result.g[krnPixelIndex] = Math.floor(pixelValue.g);
+            this.kernel.result.b[krnPixelIndex] = Math.floor(pixelValue.b);
+            this.kernel.result.a[krnPixelIndex] = Math.floor(pixelValue.a);
           }
         }
-
+        
         //Add up the result kernel into a single pixel
-        pixelValue.r = this.kernel.result.r.reduce(
-          (accumulator, value) => {
-            return accumulator + value;
-          }
-        );
-        pixelValue.g = this.kernel.result.g.reduce(
-          (accumulator, value) => {
-            return accumulator + value;
-          }
-        );
-        pixelValue.b = this.kernel.result.b.reduce(
-          (accumulator, value) => {
-            return accumulator + value;
-          }
-        );
-        pixelValue.a = 255;// pixelValue.a = this.kernel.result.a.reduce(
-        //   (accumulator, value) => {
-        //     return accumulator + value;
-        //   }
-        // );
+        pixelValue = this.kernel.reduceResult(pixelValue);
 
         //Average the value by the pixel count of the kernel
-        pixelValue.r /= this.kernel.result.r.length;
-        pixelValue.g /= this.kernel.result.g.length;
-        pixelValue.b /= this.kernel.result.b.length;
-        //pixelValue.a /= this.kernel.result.a.length;
-
+        pixelValue.r /= this.kernel.result.r.length/1.3;
+        pixelValue.g /= this.kernel.result.g.length/1.3;
+        pixelValue.b /= this.kernel.result.b.length/1.3;
+        pixelValue.a /= this.kernel.result.a.length/1.3;
+        
         //Set the destination pixel to the kernel processed source pixel
-        dstView.setUint8(dstPixelIndex + 0, pixelValue.r);
-        dstView.setUint8(dstPixelIndex + 1, pixelValue.g);
-        dstView.setUint8(dstPixelIndex + 2, pixelValue.b);
-        dstView.setUint8(dstPixelIndex + 3, pixelValue.a);
+        PixelFilter.setPixelAt(sx, sy, dstImageData, pixelValue);
       }
     }
-
-    viewer.ctxActive.putImageData(dst, 0, 0);
-
-    viewer.popActiveLayer();
+    console.log("Finished");
   }
 }
 
@@ -456,13 +517,13 @@ export class MultiKernelFilter extends Filter {
           for (let ky = 0; ky < this.kernels[0].height; ky++) {
             nx = sx + (kx - kwh);
             ny = sy + (ky - khh);
-            if (nx < 0 || nx > sw-1 || ny < 0 || ny > sh-1) continue;
+            if (nx < 0 || nx > sw - 1 || ny < 0 || ny > sh - 1) continue;
             //Lay the kernel centered over the current source image pixel
             srcPixelIndex = Utils.TwoDimToIndex(sx + (kx - kwh), sy + (ky - khh), sw) * 4;
 
             krnPixelIndex = Utils.TwoDimToIndex(kx, ky, this.kernels[0].width);
 
-            for (let i=0; i<this.kernels.length; i++) {
+            for (let i = 0; i < this.kernels.length; i++) {
               //Get kernel at this point
               krnCell = this.kernels[i].data[krnPixelIndex];
 

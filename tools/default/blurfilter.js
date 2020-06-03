@@ -38,7 +38,7 @@ class BlurFilter extends KernelFilter {
     let g = makeGaussian(1, 0.45, 0.45, 0.5, 0.5);
 
     this.kernel.useEquation(g);
-    this.kernel.radius = 9;
+    this.kernel.radius = 21;
     this.kernel.normalize();
 
     window.fblur = this;
