@@ -1,31 +1,29 @@
 
-import {API} from "./api.js";
-
-import { Menu, MenuItem } from "./components/menu.js";
+import { API } from "./api.js";
+import { Menu } from "./components/menu.js";
 import { Viewer } from "./components/viewer.js";
 import { ChoiceBox } from "./components/choicebox.js";
 import ToolBox from "./components/toolbox.js";
+import { get, on } from "./aliases.js";
 
-let get = (id) => document.getElementById(id);
-/**Remove element's children
- * @param {HTMLElement} element 
+/**File open dialog
+ * Returns a promise that contains the files
+ * @returns {Promise<Array<File>>}
  */
-let removeChildren = (element, classMatch = undefined) => {
-  for (let child of element.children) {
-    if (classMatch === undefined || classMatch === "*" || child.classList.contains(classMatch)) {
-      child.remove();
-    }
-  }
-};
-let fget = (cb) => {
-  /**@type {HTMLInputElement} */
-  let fin = get("f-in");
-  let listener = (evt) => {
-    cb(fin.files);
-    fin.removeEventListener("change", listener);
-  };
-  fin.addEventListener("change", listener);
-  fin.click();
+let fget = () => {
+  return new Promise((resolve, reject) => {
+    let fin = get("f-in");
+    let listener = () => {
+      if (fin.files.length === 0) {
+        reject("No files opened");
+      } else {
+        resolve(fin.files);
+      }
+      fin.removeEventListener("change", listener);
+    };
+    on(fin, "change", listener);
+    fin.click();
+  });
 }
 let fset = (buffer, mimeType, name = "output.png") => {
   let element = get("f-out");
@@ -37,53 +35,52 @@ let fset = (buffer, mimeType, name = "output.png") => {
 let menu = new Menu("menu-main", get("menu-main"), get("menu-subdisplay"));
 get("menu-subdisplay").addEventListener("mouseleave", () => menu.hideSubMenu());
 
-let openOptionsBox = new ChoiceBox("How would you like to open this image?");
-openOptionsBox.addOption("nimage", "As A New Project", "Frees all data and loads as new image");
-openOptionsBox.addOption("alayer", "Into the Active Layer", "Adds to the active layer");
-openOptionsBox.addOption("nlayer", "As A New Layer", "Adds to a new layer");
-openOptionsBox.mount(document.body);
+let fileOpenOptions = new ChoiceBox("How would you like to open this image?")
+  .choice("new-image", "as new project", "Frees data and loads as a layer")
+  .choice("active-layer","into active layer", "Places into the active layer image")
+  .choice("add-layer","as new layer", "Creates a layer")
+  .mount(document.body);
 
-let menuFile = menu.add("File", () => (e) => e.preventDefault());
-menuFile.sub("New", () => {
-});
-menuFile.sub("Open (CTRL+O)", () => {
-  fget((files) => {
-    if (files.length > 0) {
-      let fr = new FileReader();
-      fr.addEventListener("load", (evt) => {
-        let img = new Image();
-        img.addEventListener("load", (evt) => {
-          openOptionsBox.trigger((choice) => {
-            let l;
-            switch (choice) {
-              case "nimage":
-                //TODO - free layers and draw main as new image
-                break;
-              case "alayer":
-                if (viewer.layers.length < 0) {
-                  viewer.addLayer("main");
-                }
-                viewer.ctxActive.drawImage(img, 0, 0);
-                break;
-              case "nlayer":
-                let name = files.item(0).name;
-                createImageBitmap(img).then((ib) => {
-                  l = viewer.addLayer(name, ib);
-                  viewer.setActiveLayer(l);
-                });
-                break;
+let menuFile = menu.add("File", (e) => e.preventDefault())
+  .sub("New", () => { })
+  .sub("Open (CTRL+O)", async () => {
+    let files = await fget();
+    if (!files.length > 0) return;
+
+    let fr = new FileReader();
+    on(fr, "load", (evt) => {
+      let img = new Image();
+      on(img, "load", async () => {
+        let choice = await fileOpenOptions.choose();
+        let l;
+        switch (choice) {
+          case "new-image":
+            //TODO - free layers and draw main as new image
+            break;
+          case "active-layer":
+            if (viewer.layers.length < 0) {
+              viewer.addLayer("main");
             }
-          });
-        });
-        img.src = evt.target.result;
+            viewer.ctxActive.drawImage(img, 0, 0);
+            break;
+          case "active-layer":
+            let name = files.item(0).name;
+            createImageBitmap(img).then((ib) => {
+              l = viewer.addLayer(name, ib);
+              viewer.setActiveLayer(l);
+            });
+            break;
+        }
       });
-      fr.readAsDataURL(files[0]);
-    }
+      img.src = evt.target.result;
+    });
+    fr.readAsDataURL(files[0]);
   });
-});
+
 menuFile.sub("Save (CTRL+S)", () => {
   viewer.renderCompositePNG((png) => {
     let name = prompt("Exported File Name:", "export.png");
+    if (name === null) return;
     fset(png, "application/octet-stream", name);
   })
 });
@@ -118,7 +115,7 @@ let viewer = new Viewer();
 viewer.mount(get("middle"));
 viewer.addLayer("main");
 window.viewer = viewer;
-window.addEventListener("resize", ()=>{
+window.addEventListener("resize", () => {
   viewer.recalcDrawRect();
   viewer.resize();
   viewer.renderLayers();
