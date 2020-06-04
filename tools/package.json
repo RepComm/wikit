@@ -21,6 +21,11 @@
       "enabled": true
     },
     {
+      "name": "default",
+      "file": "gradient.js",
+      "enabled": true
+    },
+    {
       "name": "pencil",
       "file": "pencil.js",
       "enabled": false

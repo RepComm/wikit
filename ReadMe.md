@@ -7,6 +7,7 @@ Implemented filters (no buttons to push yet)
 - Grayscale
 - Basic sobel edge
 - Gaussian blur
+- Gradient
 
 Implemented classes:
 - Kernel - advanced class for managing kernel instructions
