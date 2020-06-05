@@ -1,8 +1,12 @@
 
 import { API, Filter } from "../../code/api.js";
 
+/**@type {API} */
+let _api;
+
 /**@param {API} api*/
 export default function onRegister(api) {
+  _api = api;
   api.registerFilter(new GradientFilter());
 }
 
@@ -19,11 +23,20 @@ class GradientFilter extends Filter {
     this.stops = new Array();
 
     this.from = {x:0,y:0};
-    this.to = {x:0,y:0};
+    this.to = {x:300,y:300};
 
     this.addColorStop(0, "white");
-    this.addColorStop(0.5, "red");
+    this.addColorStop(0.5, "#4488ff");
     this.addColorStop(1, "black");
+    
+    _api.input.listen((type)=>{
+      if (type === "pointer-down") {
+        this.setFrom(_api.input.pointer.x, _api.input.pointer.y);
+      } else if (type === "pointer-up") {
+        this.setTo(_api.input.pointer.x, _api.input.pointer.y);
+        this.perform(viewer, viewer.activeLayer, false);
+      }
+    });
   }
   addColorStop(p, color) {
     this.stops.push({p:p, color:color});

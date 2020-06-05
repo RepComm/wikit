@@ -10,6 +10,7 @@ Implemented filters (no buttons to push yet)
 - Gradient
 
 Implemented classes:
+- Input - Centralized input class, event based and procedural functionality
 - Kernel - advanced class for managing kernel instructions
 - Tool - base class for all tools
 - - Filter - for manual layer manipulation

@@ -1,6 +1,7 @@
 import { OptionsBox } from "./components/optionsbox.js";
 import { Viewer } from "./components/viewer.js";
 import { Utils } from "./math.js";
+import { Input } from "./input.js";
 
 export class API {
   constructor() {
@@ -12,6 +13,9 @@ export class API {
 
     /**@type {import("./components/viewer.js").Viewer} */
     this.viewer;
+
+    this.input = new Input();
+    this.input.registerEvents();
   }
 
   /**Register a brush tool

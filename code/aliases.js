@@ -8,16 +8,25 @@ let getByClass = (classname) => document.getElementsByClassName(classname);
 let rect = (e) => e.getBoundingClientRect();
 //Create an element, alias
 let make = (type) => document.createElement(type);
-/**
- * 
- * @param {Object} elem 
- * @param {*} type 
+/**Listen to events on an element
+ * @param {HTMLElement} elem 
+ * @param {string} type 
  * @param {callback} callback 
  * @param {object} options 
  */
 let on = (elem, type, callback, options) => {
-  if (!elem) console.trace("Null");
+  if (!elem) throw "No element supplied";
   elem.addEventListener(type, callback, options);
+}
+
+/**Stop listen to events on an element
+ * @param {HTMLElement} elem 
+ * @param {string} type 
+ * @param {callback} callback 
+ */
+let off = (elem, type, callback) => {
+  if (!elem) throw "No element supplied";
+  elem.removeEventListener(type, callback);
 }
 
 let clearChildren = (e)=>{
@@ -47,4 +56,4 @@ let applyStyleClasses = (e, ...classes) => {
   }
 }
 
-export { get, getByClass, rect, make, on, clearChildren, setProps, applyStyleClasses };
+export { get, getByClass, rect, make, on, off, clearChildren, setProps, applyStyleClasses };
