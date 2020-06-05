@@ -31,9 +31,15 @@ class GradientFilter extends Filter {
     
     _api.input.listen((type)=>{
       if (type === "pointer-down") {
-        this.setFrom(_api.input.pointer.x, _api.input.pointer.y);
+        this.setFrom(
+          _api.input.pointer.x - _api.viewer.windowOffsetX,
+          _api.input.pointer.y - _api.viewer.windowOffsetY
+        );
       } else if (type === "pointer-up") {
-        this.setTo(_api.input.pointer.x, _api.input.pointer.y);
+        this.setTo(
+          _api.input.pointer.x - _api.viewer.windowOffsetX,
+          _api.input.pointer.y - _api.viewer.windowOffsetY
+        );
         this.perform(viewer, viewer.activeLayer, false);
       }
     });

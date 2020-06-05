@@ -123,6 +123,7 @@ window.addEventListener("resize", () => {
 
 let toolbox = new ToolBox("ToolBox", viewer);
 let api = new API();
+api.viewer = viewer;
 
 fetch("./tools/package.json").then(resp => resp.json().then((pkg) => {
   for (let toolInfo of pkg.installed) {

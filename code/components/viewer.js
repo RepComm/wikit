@@ -72,9 +72,14 @@ export class Viewer {
 
     /**@type {Array<Layer>} active layer stack*/
     this.activeLayerStack = new Array();
+
+    this.windowOffsetX = 0;
+    this.windowOffsetY = 0;
   }
 
   renderLayers() {
+    this.windowOffsetX = this.drawRect.left;
+    this.windowOffsetY = this.drawRect.top;
     if (this.layers.length < 1) return;
     this.ctxLower.clearRect(
       0,
@@ -166,6 +171,8 @@ export class Viewer {
   }
 
   resize() {
+    this.windowOffsetX = this.drawRect.left;
+    this.windowOffsetY = this.drawRect.top;
     this.canvasLower.width = this.drawRect.width;
     this.canvasLower.height = this.drawRect.height;
     this.canvasLower.style.width = this.drawRect.width + "px";
