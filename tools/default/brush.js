@@ -1,5 +1,5 @@
 
-import { dist, angle } from "../../code/math.js";
+import { dist, angle } from "../../code/utils/math.js";
 import { Brush, API } from "../../code/api.js";
 
 /**@param {API} api*/

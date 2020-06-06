@@ -84,6 +84,7 @@ export class Input {
    * @param {"key-up"|"key-down"|"pointer-up"|"pointer-down"} type
    */
   listen (cb) {
+    if (!cb) throw "Callback cannot be " + cb;
     this.listeners.push(cb);
   }
   /**Remove a listener

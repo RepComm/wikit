@@ -1,46 +1,47 @@
 
-import { make, on, rect } from "../aliases.js";
+import { Component } from "./component.js";
 
-class Choice {
+class Choice extends Component {
   constructor () {
-    this.element = make("span");
-    this.element.classList.add("choicebox-option");
+    super();
+    this.make("span");
+    this.addClasses("choicebox-option");
+    /**@type {ChoiceBox} Parent choice box*/
     this.choicebox = undefined;
   }
+  /**Sets the title
+   * @param {string} txt
+   * @returns {Choice} self
+   */
   title (txt) {
     this.element.textContent = txt;
     return this;
   }
+  /**Sets the tooltip content
+   * @param {string} txt
+   * @returns {Choice} self
+   */
   tooltip (txt) {
     this._tooltip = txt;
     return this;
   }
-  mount (parent) {
-    parent.appendChild(this.element);
-    return this;
-  }
-  /**Set the ID of the element
-   * @param {string} v 
-   */
-  id (v) {
-    this.element.id = v;
-    return this;
-  }
 }
 
-class ChoiceBox {
+class ChoiceBox extends Component {
   constructor() {
+    super();
     /**@type {Array<Choice>} */
     this.choices = new Array();
 
-    this.element = make("div");
-    this.element.classList.add("choicebox");
+    this.make("div");
+    this.addClasses("choicebox");
     
-    this.tooltip = make("div");
-    this.tooltip.classList.add("choicebox-tooltip");
+    this.tooltip = new Component()
+      .make("span")
+      .addClasses("choicebox-tooltip");
 
     this.hide();
-    document.body.appendChild(this.tooltip);
+    this.tooltip.mount(document.body);
 
     this.listener = (resolve, reject, evt)=>{
       if (evt.target.classList.contains("choicebox-option")) {
@@ -57,20 +58,18 @@ class ChoiceBox {
    * @param {Choice} choice 
    */
   onTooltip (choice) {
-    this.tooltip.style.display = "unset";
-    this.tooltip.textContent = choice._tooltip;
-    let r = rect(choice.element);
-    this.tooltip.style.left = r.left + "px";
-    this.tooltip.style.top = r.bottom + "px";
+    this.tooltip.show();
+    this.tooltip.textContent(choice._tooltip);
+    this.tooltip.left = choice.rect.left + "px";
+    this.tooltip.top = choice.rect.bottom + "px";
   }
   hide () {
-    this.element.style.display = "none";
-    this.tooltip.style.display = "none";
-    return this;
+    this.tooltip.hide();
+    return super.hide();
   }
   show () {
-    this.element.style.display = "";
-    return this;
+    this.tooltip.show();
+    return super.show();
   }
   /**Add a choice to the box
    * @param {string} id
@@ -82,16 +81,13 @@ class ChoiceBox {
       .title(title)
       .tooltip(tooltip)
       .mount(this.element)
-      .id(id);
-    on(choice.element, "mouseenter", (evt)=>this.onTooltip(choice));
+      .id(id)
+      .on("mouseenter", (evt)=>this.onTooltip(choice));
+    
     this.choices.push(choice);
     return this;
   }
-  mount(parent) {
-    parent.appendChild(this.element);
-    return this;
-  }
-  /**Get a choice from the user
+  /**Get a choice from the user - non self-chainable function
    * @returns {Promise<string>} chosen options
    */
   choose () {

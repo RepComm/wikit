@@ -1,10 +1,17 @@
 import { OptionsBox } from "./components/optionsbox.js";
 import { Viewer } from "./components/viewer.js";
-import { Utils } from "./math.js";
-import { Input } from "./input.js";
+import { Utils } from "./utils/math.js";
+import { Input } from "./utils/input.js";
+import ToolBox from "./components/toolbox.js";
 
 export class API {
+  static Global = undefined;
   constructor() {
+    if (!API.Global) {
+      API.Global = this;
+    } else {
+      throw "Cannot create another API!";
+    }
     /**@type {Array<Brush>}*/
     this.brushes = new Array();
 
@@ -16,6 +23,8 @@ export class API {
 
     this.input = new Input();
     this.input.registerEvents();
+
+    this.toolbox = new ToolBox("main", this);
   }
 
   /**Register a brush tool
@@ -84,6 +93,11 @@ export class API {
 
   onEvent(evt) {
     console.log(evt);
+  }
+
+  /**@param {Viewer} viewer*/
+  setViewer (viewer) {
+    this.viewer = viewer;
   }
 }
 

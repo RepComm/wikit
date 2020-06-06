@@ -3,8 +3,7 @@ import { API } from "./api.js";
 import { Menu } from "./components/menu.js";
 import { Viewer } from "./components/viewer.js";
 import { ChoiceBox } from "./components/choicebox.js";
-import ToolBox from "./components/toolbox.js";
-import { get, on } from "./aliases.js";
+import { get, on } from "./utils/aliases.js";
 
 /**File open dialog
  * Returns a promise that contains the files
@@ -121,9 +120,8 @@ window.addEventListener("resize", () => {
   viewer.renderLayers();
 });
 
-let toolbox = new ToolBox("ToolBox", viewer);
 let api = new API();
-api.viewer = viewer;
+api.setViewer(viewer);
 
 fetch("./tools/package.json").then(resp => resp.json().then((pkg) => {
   for (let toolInfo of pkg.installed) {
@@ -139,4 +137,4 @@ fetch("./tools/package.json").then(resp => resp.json().then((pkg) => {
   }
 }));
 
-toolbox.mount(get("left"));
+api.toolbox.mount(get("left"));

@@ -3,15 +3,16 @@ A modular HTML5 image editor written in JS
 
 Reworking to fit things I've learned in the past months of coding
 
-Implemented filters (no buttons to push yet)
+Implemented filters
 - Grayscale
 - Basic sobel edge
 - Gaussian blur
 - Gradient
 
 Implemented classes:
-- Input - Centralized input class, event based and procedural functionality
-- Kernel - advanced class for managing kernel instructions
+- Component - Centralized UI creation/modification (I can't stand using libraries..)
+- Input - Event based and procedural functionality
+- Kernel - For creating / updating image kernels
 - Tool - base class for all tools
 - - Filter - for manual layer manipulation
 - - - PixelFilter - for easy pixel manipulation

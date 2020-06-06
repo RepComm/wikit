@@ -1,5 +1,8 @@
 
-export class Layer {
+import { make, applyStyleClasses } from "../utils/aliases.js";
+import { Component } from "./component.js";
+
+export class Layer extends Component {
   /**Construct a new layer
    * @param {String} name of this layer
    * @param {Number} width in pixels
@@ -9,6 +12,7 @@ export class Layer {
    * @param {ImageBitmap} imageBitmap raw data
    */
   constructor(name = "layer", width = 512, height = 512, x = 0, y = 0, imageBitmap = undefined) {
+    super();
     this.name = name;
     this.width = parseInt(width);
     this.height = parseInt(height);
@@ -21,37 +25,37 @@ export class Layer {
       //this.imageBitmap = new ImageData(this.width, this.height);
       this.imageBitmap = undefined;
     }
+    this.make("div");
+    this.addClasses("layer");
 
-    this.element = document.createElement("div");
-    this.element.classList.add("layer");
-    this.element.innerText = this.name;
-  }
-
-  mount(p) {
-    p.appendChild(this.element);
+    this.nameSpan = new Component()
+      .make("span")
+      .textContent(this.name)
+      .addClasses("layer-name")
+      .mount(this);
   }
 }
 
 export class Viewer {
   constructor() {
     this.drawRect = undefined;
-    this.container = document.createElement("div");
+    this.container = make("div");
     this.container.classList.add("render-container");
 
     //Renderer for layers below active/edit
-    this.canvasLower = document.createElement("canvas");
+    this.canvasLower = make("canvas");
     this.canvasLower.classList.add("render-canvas");
     this.canvasLower.id = "canvasLower";
     this.container.appendChild(this.canvasLower);
 
     //Renderer for active/edit layer
-    this.canvasActive = document.createElement("canvas");
+    this.canvasActive = make("canvas");
     this.canvasActive.classList.add("render-canvas");
     this.canvasActive.id = "canvasActive";
     this.container.appendChild(this.canvasActive);
 
     //Renderer for layers above active/edit
-    this.canvasHigher = document.createElement("canvas");
+    this.canvasHigher = make("canvas");
     this.canvasHigher.id = "canvasHigher";
     this.canvasHigher.classList.add("render-canvas");
     this.container.appendChild(this.canvasHigher);
@@ -67,7 +71,7 @@ export class Viewer {
     this.activeIsOutlined = true;
     this.activeLayer = undefined;
 
-    this.layersElement = document.createElement("div");
+    this.layersElement = make("div");
     this.layersElement.classList.add("layers");
 
     /**@type {Array<Layer>} active layer stack*/
