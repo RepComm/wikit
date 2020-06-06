@@ -5,6 +5,7 @@ import { Input } from "./utils/input.js";
 import ToolBox from "./components/toolbox.js";
 
 export class API {
+  /**@type {API} Global instance/singleton*/
   static Global = undefined;
   constructor() {
     if (!API.Global) {

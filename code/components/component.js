@@ -26,6 +26,17 @@ export class Component {
     return this;
   }
 
+  mountChild (child) {
+    if (child instanceof HTMLElement) {
+      this.element.appendChild(child);
+    } else if (child instanceof Component) {
+      this.element.appendChild(child.element);
+    } else {
+      throw "Cannot append child because its not a Component or HTMLElement";
+    }
+    return this;
+  }
+
   /**Listen to events on this componenet's element
    * @param {string} type 
    * @param {callback} callback

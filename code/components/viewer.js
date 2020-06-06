@@ -1,5 +1,5 @@
 
-import { make, applyStyleClasses } from "../utils/aliases.js";
+import { make } from "../utils/aliases.js";
 import { Component } from "./component.js";
 
 export class Layer extends Component {
@@ -36,54 +36,49 @@ export class Layer extends Component {
   }
 }
 
-export class Viewer {
+export class Viewer extends Component {
   constructor() {
-    this.drawRect = undefined;
-    this.container = make("div");
-    this.container.classList.add("render-container");
+    super();
+    this.make("div");
+    this.addClasses("render-container");
 
     //Renderer for layers below active/edit
     this.canvasLower = make("canvas");
     this.canvasLower.classList.add("render-canvas");
     this.canvasLower.id = "canvasLower";
-    this.container.appendChild(this.canvasLower);
+    this.mountChild(this.canvasLower);
 
     //Renderer for active/edit layer
     this.canvasActive = make("canvas");
     this.canvasActive.classList.add("render-canvas");
     this.canvasActive.id = "canvasActive";
-    this.container.appendChild(this.canvasActive);
+    this.mountChild(this.canvasActive);
 
     //Renderer for layers above active/edit
     this.canvasHigher = make("canvas");
     this.canvasHigher.id = "canvasHigher";
     this.canvasHigher.classList.add("render-canvas");
-    this.container.appendChild(this.canvasHigher);
+    this.mountChild(this.canvasHigher);
 
     this.ctxLower = this.canvasLower.getContext("2d");
     this.ctxActive = this.canvasActive.getContext("2d");
     this.ctxHigher = this.canvasHigher.getContext("2d");
 
-    /** @type {Array<Layer>}
-     */
+    /** @type {Array<Layer>}*/
     this.layers = new Array();
     this.activeLayerIndex = 0;
     this.activeIsOutlined = true;
     this.activeLayer = undefined;
 
-    this.layersElement = make("div");
-    this.layersElement.classList.add("layers");
+    this.layersElement = new Component()
+      .make("div")
+      .addClasses("layer-listbox");
 
     /**@type {Array<Layer>} active layer stack*/
     this.activeLayerStack = new Array();
-
-    this.windowOffsetX = 0;
-    this.windowOffsetY = 0;
   }
 
   renderLayers() {
-    this.windowOffsetX = this.drawRect.left;
-    this.windowOffsetY = this.drawRect.top;
     if (this.layers.length < 1) return;
     this.ctxLower.clearRect(
       0,
@@ -165,36 +160,29 @@ export class Viewer {
   }
 
   clear() {
-    this.ctxLower.clearRect(0, 0, this.drawRect.width, this.drawRect.height);
-    this.ctxActive.clearRect(0, 0, this.drawRect.width, this.drawRect.height);
-    this.ctxHigher.clearRect(0, 0, this.drawRect.width, this.drawRect.height);
-  }
-
-  recalcDrawRect() {
-    this.drawRect = this.container.getBoundingClientRect();
+    this.ctxLower.clearRect(0, 0, this.rect.width, this.rect.height);
+    this.ctxActive.clearRect(0, 0, this.rect.width, this.rect.height);
+    this.ctxHigher.clearRect(0, 0, this.rect.width, this.rect.height);
   }
 
   resize() {
-    this.windowOffsetX = this.drawRect.left;
-    this.windowOffsetY = this.drawRect.top;
-    this.canvasLower.width = this.drawRect.width;
-    this.canvasLower.height = this.drawRect.height;
-    this.canvasLower.style.width = this.drawRect.width + "px";
+    this.canvasLower.width = this.rect.width;
+    this.canvasLower.height = this.rect.height;
+    this.canvasLower.style.width = this.rect.width + "px";
 
-    this.canvasHigher.width = this.drawRect.width;
-    this.canvasHigher.height = this.drawRect.height;
-    this.canvasHigher.style.width = this.drawRect.width + "px";
+    this.canvasHigher.width = this.rect.width;
+    this.canvasHigher.height = this.rect.height;
+    this.canvasHigher.style.width = this.rect.width + "px";
 
 
-    this.canvasActive.width = this.drawRect.width;
-    this.canvasActive.height = this.drawRect.height;
-    this.canvasActive.style.width = this.drawRect.width + "px";
+    this.canvasActive.width = this.rect.width;
+    this.canvasActive.height = this.rect.height;
+    this.canvasActive.style.width = this.rect.width + "px";
   }
 
   mount(parent) {
-    parent.appendChild(this.container);
-
-    this.recalcDrawRect();
+    super.mount(parent);
+    
     this.clear();
 
     this.resize();
@@ -207,7 +195,7 @@ export class Viewer {
     if (imageBitmap) {
       l = new Layer(name, imageBitmap.width, imageBitmap.height, 0, 0, imageBitmap);
     } else {
-      l = new Layer(name, this.drawRect.width, this.drawRect.height, 0, 0, imageBitmap);
+      l = new Layer(name, this.rect.width, this.rect.height, 0, 0, imageBitmap);
     }
     this.layers.push(l);
     if (!this.activeLayer) {

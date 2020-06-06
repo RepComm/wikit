@@ -29,21 +29,22 @@ class GradientFilter extends Filter {
     this.addColorStop(0.5, "#4488ff");
     this.addColorStop(1, "black");
     
-    //Testing only, replacing with standard implementation in toolbox
-    // _api.input.listen((type)=>{
+    // Testing only, replacing with standard implementation in toolbox
+    // API.Global.input.listen((type)=>{
     //   if (type === "pointer-down") {
     //     this.setFrom(
-    //       _api.input.pointer.x - _api.viewer.windowOffsetX,
-    //       _api.input.pointer.y - _api.viewer.windowOffsetY
+    //       API.Global.input.pointer.x - API.Global.viewer.rect.left,
+    //       API.Global.input.pointer.y - API.Global.viewer.rect.top
     //     );
     //   } else if (type === "pointer-up") {
     //     this.setTo(
-    //       _api.input.pointer.x - _api.viewer.windowOffsetX,
-    //       _api.input.pointer.y - _api.viewer.windowOffsetY
+    //       API.Global.input.pointer.x - API.Global.viewer.rect.left,
+    //       API.Global.input.pointer.y - API.Global.viewer.rect.top
     //     );
-    //     this.perform(viewer, viewer.activeLayer, false);
+    //     this.perform(API.Global.viewer, API.Global.viewer.activeLayer, false);
     //   }
     // });
+
   }
   addColorStop(p, color) {
     this.stops.push({p:p, color:color});
