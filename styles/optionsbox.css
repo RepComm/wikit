@@ -1,95 +1,95 @@
-
 .optionsbox {
-    flex:1;
+  flex: 1;
 }
 
 .optionsbox-option-slider {
-    width:90%;
-    margin-left:5%;
-    -webkit-appearance: none;
-    /* Override default CSS styles */
-    appearance: none;
-    outline: none;
-    height:10px;
-    background-color: rgb(51, 51, 51);
-    border-radius: 0.5em;
+  width: 90%;
+  margin-left: 5%;
+  -webkit-appearance: none;
+  /* Override default CSS styles */
+  appearance: none;
+  outline: none;
+  height: 10px;
+  background-color: rgb(51, 51, 51);
+  border-radius: 0.5em;
 }
-.optionsbox-option-slider::slider-thumb,
-.optionsbox-option-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    /* Override default look */
-    appearance: none;
-    width: 25px;
-    /* Set a specific slider handle width */
-    height: 25px;
-    /* Green background */
-    cursor: pointer;
-    outline:none;
+
+.optionsbox-option-slider::slider-thumb, .optionsbox-option-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  /* Override default look */
+  appearance: none;
+  width: 25px;
+  /* Set a specific slider handle width */
+  height: 25px;
+  /* Green background */
+  cursor: pointer;
+  outline: none;
 }
 
 .optionsbox-title {
-    display: inline-block;
-    font-size:x-large;
-    color:inherit;
-    width:100%;
-    background-color: rgb(51, 51, 51);
-    text-align:center;
+  display: inline-block;
+  font-size: x-large;
+  color: inherit;
+  width: 100%;
+  background-color: rgb(51, 51, 51);
+  text-align: center;
 }
 
 .optionsbox-option-color {
-    width:90%;
-    margin-left:5%;
-    -webkit-appearance: none;
-    /* Override default CSS styles */
-    appearance: none;
-    outline: none;
-    border-radius: 0.5em;
-    border:none;
+  width: 90%;
+  margin-left: 5%;
+  -webkit-appearance: none;
+  /* Override default CSS styles */
+  appearance: none;
+  outline: none;
+  border-radius: 0.5em;
+  border: none;
+  display:block;
 }
 
 .optionsbox-option-boolean {
-    width:90%;
-    margin-left:5%;
-    /* -webkit-appearance: none; */
-    /* Override default CSS styles */
-    /* appearance: none; */
-    outline: none;
-    border-radius: 0.5em;
-    border:none;
+  width: 90%;
+  margin-left: 5%;
+  /* -webkit-appearance: none; */
+  /* Override default CSS styles */
+  /* appearance: none; */
+  outline: none;
+  border-radius: 0.5em;
+  border: none;
 }
 
 .optionsbox-option-title {
-    width:90%;
-    margin-left:5%;
+  width: 90%;
+  margin-left: 5%;
 }
 
 .optionsbox-option-number {
-    width:90%;
-    margin-left:5%;
-    -webkit-appearance: none;
-    /* Override default CSS styles */
-    appearance: none;
-    outline: none;
-    height:15px;
-    background-color: rgb(51, 51, 51);
-    border-radius: 0.5em;
-    color:inherit;
-    border-width:1px;
-    text-align:center;
+  width: 90%;
+  margin-left: 5%;
+  -webkit-appearance: none;
+  /* Override default CSS styles */
+  appearance: none;
+  outline: none;
+  height: 15px;
+  background-color: rgb(51, 51, 51);
+  border-radius: 0.5em;
+  color: inherit;
+  border-width: 1px;
+  text-align: center;
 }
 
 .optionsbox-option-button {
-    width:90%;
-    margin-left:5%;
-    margin-top:1em;
-    -webkit-appearance: none;
-    /* Override default CSS styles */
-    appearance: none;
-    outline: none;
-    height:25px;
-    background-color: rgb(51, 51, 51);
-    border-radius: 0.5em;
-    color:inherit;
-    border-width:1px;
-    text-align:center;
+  width: 90%;
+  margin-left: 5%;
+  margin-top: 1em;
+  -webkit-appearance: none;
+  /* Override default CSS styles */
+  appearance: none;
+  outline: none;
+  height: 25px;
+  background-color: rgb(51, 51, 51);
+  border-radius: 0.5em;
+  color: inherit;
+  border-width: 1px;
+  text-align: center;
 }

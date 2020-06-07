@@ -1,6 +1,6 @@
 
 import { get } from "./utils/aliases.js";
-import { OptionsBox } from "./components/optionsbox.js";
+import { OptionsBox, OptionColor, OptionNumber } from "./components/optionsbox.js";
 import { Viewer } from "./components/viewer.js";
 import { Utils } from "./utils/math.js";
 import { Input } from "./utils/input.js";
@@ -111,9 +111,11 @@ export class API {
     this.viewer = viewer;
   }
 
+  /**@param {Tool} tool*/
   addPaletteButton (tool) {
     let btn = new PaletteButton();
     btn.on("click", (evt)=>this.toolbox.setActiveTool(tool));
+    btn.textContent(tool.name);
     btn.mount(this.palette);
     return btn;
   }
@@ -139,7 +141,7 @@ export class Path {
 export class PaletteButton extends Component {
   constructor () {
     super();
-    this.make("div");
+    this.make("button");
     this.addClasses("palette-button");
   }
 
@@ -172,20 +174,39 @@ export class Tool {
 export class Brush extends Tool {
   /**@type {string} foreground color*/
   static fgColor = "white";
+  static fgColorOpt = new OptionColor("fg","foreground").on("change", (evt)=>{
+    Brush.fgColor = evt.target.value;
+  });
   /**@type {string} background color*/
   static bgColor = "black";
+  static bgColorOpt = new OptionColor("bg","background").on("change", (evt)=>{
+    Brush.bgColor = evt.target.value;
+  });
   /**@type {number} width in pixels*/
   static width = 1;
+  static widthOpt = new OptionNumber("width","width")
+    .min(0.1).max(32).value(2).step(0.1).on("change", (evt)=>{
+      Brush.width = evt.target.valueAsNumber;
+    });
   /**@type {boolean} debug draw*/
   static debugDraw = false;
   /**@type {number} opacity 0 - 1*/
   static opacity = 1;
+  static opacityOpt = new OptionNumber("opacity","opacity")
+    .min(0).max(1).value(1).step(0.01).on("change", (evt)=>{
+      Brush.opacity = evt.target.valueAsNumber;
+    });
+  
 
   constructor(name) {
     super(name);
 
     /**@type {OptionsBox} ui container*/
     this.options = new OptionsBox(`${name} options`);
+    this.options.add(Brush.opacityOpt);
+    this.options.add(Brush.fgColorOpt);
+    this.options.add(Brush.bgColorOpt);
+    this.options.add(Brush.widthOpt);
 
     /**@type {string} icon image reference*/
     this.icon = "";

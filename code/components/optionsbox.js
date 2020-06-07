@@ -7,6 +7,10 @@ export class Option extends Component {
   */
   constructor(id, name) {
     super();
+    if (!id) throw "id cannot be " + id;
+    if (!name) {
+      console.trace("Here"); throw "name cannot be " + name;
+    }
     this.make("div");
     this.addClasses("optionsbox-option");
     this.id(id);
@@ -49,28 +53,40 @@ export class OptionNumber extends Option {
     this.title.textContent(name);
   }
   /**@returns {number}*/
-  get min() {
-    return this.element.min;
+  getMin() {
+    return this.input.element.min;
   }
   /**@param {number} v*/
-  set min(v) {
-    this.element.min = v;
+  min(v) {
+    this.input.element.min = v;
+    return this;
   }
   /**@returns {number}*/
-  get step() {
-    return this.element.step;
+  getMax() {
+    return this.input.element.max;
   }
   /**@param {number} v*/
-  set step(v) {
-    this.element.step = v;
+  max(v) {
+    this.input.element.max = v;
+    return this;
   }
   /**@returns {number}*/
-  get value() {
-    return parseFloat(this.element.value);
+  getStep() {
+    return this.input.element.step;
   }
   /**@param {number} v*/
-  set value(v) {
-    this.element.value = v.toString();
+  step(v) {
+    this.input.element.step = v;
+    return this;
+  }
+  /**@returns {number}*/
+  getValue() {
+    return parseFloat(this.input.element.value);
+  }
+  /**@param {number} v*/
+  value(v) {
+    this.input.element.valueAsNumber = v;
+    return this;
   }
 }
 
@@ -84,8 +100,8 @@ export class OptionSlider extends OptionNumber {
 }
 
 export class OptionColor extends Option {
-  constructor(name) {
-    super(name);
+  constructor(id, name) {
+    super(id, name);
     this.input = new Component()
       .make("input")
       .type("color")
