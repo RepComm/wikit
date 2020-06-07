@@ -1,10 +1,13 @@
 
 import { dist, angle } from "../../code/utils/math.js";
 import { Brush, API } from "../../code/api.js";
+import { OptionColor } from "../../code/components/optionsbox.js";
 
 /**@param {API} api*/
 export default function onRegister (api) {
-  api.registerBrush(new DefaultBrush());
+  let tool = new DefaultBrush();
+  api.registerBrush(tool);
+  api.addPaletteButton(tool).icon("./tools/default/brush-icon.svg");
 }
 
 class DefaultBrush extends Brush {
@@ -25,6 +28,22 @@ class DefaultBrush extends Brush {
       tl:{x:0, y:0},
       tr:{x:0, y:0}
     };
+
+    this.options.add(new OptionColor("fg"));
+  }
+
+  onEvent(type) {
+    if (type === "pointer-move") {
+      if (API.Global.input.pointer.leftDown) {
+        this.onStroke(
+          API.Global.viewer.ctxActive,
+          API.Global.input.pointer.x,
+          API.Global.input.pointer.y,
+          API.Global.input.pointer.lx,
+          API.Global.input.pointer.ly,
+        );
+      }
+    }
   }
 
   onStroke(ctx, x, y, lx, ly) {
@@ -32,16 +51,22 @@ class DefaultBrush extends Brush {
     this.angle = angle(x, y, lx, ly);
     this.perpendicular = this.angle + Math.PI / 2;
 
+    this.points.bl.x = this.points.tl.x;
+    this.points.bl.y = this.points.tl.y;
+
+    this.points.br.x = this.points.tr.x;
+    this.points.br.y = this.points.tr.y;
+
     this.points.tl.x = x + (Math.cos(this.perpendicular) * Brush.width);
     this.points.tl.y = y + (Math.sin(this.perpendicular) * Brush.width);
 
     this.points.tr.x = x - (Math.cos(this.perpendicular) * Brush.width);
     this.points.tr.y = y - (Math.sin(this.perpendicular) * Brush.width);
-
+    
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(this.points.tl.x, this.points.tl.y); //Top left
-    ctx.lineTo(this.points.tr.x, this.tr.y); //Top right
+    ctx.lineTo(this.points.tr.x, this.points.tr.y); //Top right
     ctx.lineTo(this.points.br.x, this.points.br.y); //Bottom right
     ctx.lineTo(this.points.bl.x, this.points.bl.y); //Bottom left
     ctx.closePath();

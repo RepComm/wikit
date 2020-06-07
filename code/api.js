@@ -1,8 +1,11 @@
+
+import { get } from "./utils/aliases.js";
 import { OptionsBox } from "./components/optionsbox.js";
 import { Viewer } from "./components/viewer.js";
 import { Utils } from "./utils/math.js";
 import { Input } from "./utils/input.js";
 import ToolBox from "./components/toolbox.js";
+import { Component } from "./components/component.js";
 
 export class API {
   /**@type {API} Global instance/singleton*/
@@ -25,7 +28,13 @@ export class API {
     this.input = new Input();
     this.input.registerEvents();
 
-    this.toolbox = new ToolBox("main", this);
+    this.toolbox = new ToolBox("main");
+
+    this.config = new Component()
+      .useNative(get("right"));
+
+    this.palette = new Component()
+      .useNative(get("left"))
   }
 
   /**Register a brush tool
@@ -34,6 +43,7 @@ export class API {
   registerBrush(brush) {
     if (this.brushes.includes(brush)) throw "Cannot add brush twice";
     this.brushes.push(brush);
+    
     setTimeout(() => {
       this.onEvent({
         type: "brush-register",
@@ -100,14 +110,62 @@ export class API {
   setViewer (viewer) {
     this.viewer = viewer;
   }
+
+  addPaletteButton (tool) {
+    let btn = new PaletteButton();
+    btn.on("click", (evt)=>this.toolbox.setActiveTool(tool));
+    btn.mount(this.palette);
+    return btn;
+  }
+}
+
+//WARNING: Haven't tested yet
+export class Path {
+  static TEXTURES = "{textures}";
+  static ROOT = ".";
+  static SEPARATOR = "/";
+  /**@param {string} path to resolve*/
+  static resolve (path) {
+    if (path.startsWith(Path.TEXTURES)) {
+      path = Path.join(Path.ROOT, "textures", path.substring(Path.TEXTURES.length));
+    }
+  }
+
+  static join (...strings) {
+    return strings.join(Path.SEPARATOR);
+  }
+}
+
+export class PaletteButton extends Component {
+  constructor () {
+    super();
+    this.make("div");
+    this.addClasses("palette-button");
+  }
+
+  icon (url) {
+    this.backgroundImage(url);
+  }
 }
 
 export class Tool {
   /**
-   * @param {string} name 
+   * @param {string} name of the tool
    */
   constructor(name) {
     this.name = name;
+    this.options = new OptionsBox(`${name} options`);
+  }
+
+  /**Called when the tool is meant to receive contextual events
+   * Normally only happens on tools that are active
+   * @virtual
+   * @param {string} type of event fired
+   * There are no more params supplied as you are intended to
+   * fetch them yourself from the API
+   */
+  onEvent (type) {
+
   }
 }
 
@@ -128,6 +186,9 @@ export class Brush extends Tool {
 
     /**@type {OptionsBox} ui container*/
     this.options = new OptionsBox(`${name} options`);
+
+    /**@type {string} icon image reference*/
+    this.icon = "";
   }
 
   /**Override this to provide your own stroke behaviour

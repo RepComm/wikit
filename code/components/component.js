@@ -95,6 +95,14 @@ export class Component {
     return this;
   }
 
+  /**@param {HTMLElement} element use a native element instead of creating one*/
+  useNative(element) {
+    if (!element) throw "Element cannot be " + typeof(element);
+    if (!element instanceof HTMLElement) throw "Element isn't an HTMLElement!";
+    this.element = element;
+    return this;
+  }
+
   textContent (str) {
     this.element.textContent = str;
     return this;
@@ -119,5 +127,23 @@ export class Component {
   /**@returns {DOMRect} The calculated DOMRect of the component*/
   get rect () {
     return rect(this.element);
+  }
+
+  /**@param {string} type of input.type*/
+  type (t) {
+    if (!this.element instanceof HTMLInputElement) throw "type is meant to be set when the element is an HTMLInputElement";
+    this.element.type = t;
+    return this;
+  }
+
+  removeChildren () {
+    while (this.element.lastChild) {
+      this.element.lastChild.remove();
+    }
+  }
+
+  backgroundImage (url) {
+    this.element.style["background-image"] = `url(${url})`;
+    return this;
   }
 }

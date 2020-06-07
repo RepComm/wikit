@@ -113,12 +113,6 @@ let viewer = new Viewer();
 
 viewer.mount(get("middle"));
 viewer.addLayer("main");
-window.viewer = viewer;
-window.addEventListener("resize", () => {
-  viewer.recalcDrawRect();
-  viewer.resize();
-  viewer.renderLayers();
-});
 
 let api = new API();
 api.setViewer(viewer);
@@ -129,12 +123,9 @@ fetch("./tools/package.json").then(resp => resp.json().then((pkg) => {
       import("../tools/" + toolInfo.name + "/" + toolInfo.file).then((mod) => {
         mod.default(api);
       }).catch((ex) => {
-        // console.log("Error while importing module", ex);
         throw ex;
       });
 
     }
   }
 }));
-
-api.toolbox.mount(get("left"));

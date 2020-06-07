@@ -1,35 +1,50 @@
-
 .toolbox {
-    flex:1;
+  flex: 1;
 }
 
 .tool-select {
-    display:flex;
-    border-radius: 0.2em;
-    background-color:rgb(46, 46, 46);
-    color:rgb(255, 255, 255);
-    text-shadow:2px 2px 2px rgb(0, 0, 0);
-    text-align:center;
-    width:21%;
-    padding:5%;
-    margin:1%;
-    float:left;
-    cursor:pointer;
+  display: flex;
+  border-radius: 0.2em;
+  background-color: rgb(46, 46, 46);
+  color: rgb(255, 255, 255);
+  text-shadow: 2px 2px 2px rgb(0, 0, 0);
+  text-align: center;
+  width: 21%;
+  padding: 5%;
+  margin: 1%;
+  float: left;
+  cursor: pointer;
 }
 
 .tool-select-icon {
-    width:100%;
-    box-sizing: border-box;
-    flex: none;
+  width: 100%;
+  box-sizing: border-box;
+  flex: none;
 }
 
 .tool-select-text {
-    box-sizing: border-box;
-    flex: none;
-    margin-left:-100%;
-    width:100%;
+  box-sizing: border-box;
+  flex: none;
+  margin-left: -100%;
+  width: 100%;
 }
 
 .tool-select:hover {
-    background-color:rgb(70, 70, 70);
+  background-color: rgb(70, 70, 70);
+}
+
+.palette-button {
+	flex: 1;
+	background-repeat: no-repeat;
+	background-size: auto 100%;
+	background-position: 50% 50%;
+	max-height: 5em;
+	background-color: #5b5b5b;
+	border-radius: 0.5em;
+	margin: 0.25em;
+	cursor: pointer;
+}
+
+.palette-button:hover {
+  background-color: #617477;
 }

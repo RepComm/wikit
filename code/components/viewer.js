@@ -1,5 +1,5 @@
 
-import { make } from "../utils/aliases.js";
+import { make, on } from "../utils/aliases.js";
 import { Component } from "./component.js";
 
 export class Layer extends Component {
@@ -76,6 +76,13 @@ export class Viewer extends Component {
 
     /**@type {Array<Layer>} active layer stack*/
     this.activeLayerStack = new Array();
+
+    on(window, "resize", ()=>{
+      this.saveActiveLayer(()=>{
+        this.resize();
+        this.renderLayers();
+      }, false);
+    });
   }
 
   renderLayers() {

@@ -6,6 +6,8 @@ export class Input {
     this.pointer = {
       x:0,
       y:0,
+      lx:0,
+      ly:0,
       leftDown:false,
       rightDown:false
     };
@@ -13,22 +15,19 @@ export class Input {
     this.keyboard = new Map();
     /**@param {MouseEvent} evt*/
     this.onMouseMove = (evt)=>{
-      this.pointer.x = evt.clientX;
-      this.pointer.y = evt.clientY;
+      this.setPointerXY(evt.clientX, evt.clientY);
       this.onEvent("pointer-move");
     };
     /**@param {TouchEvent} evt*/
     this.onTouchMove = (evt)=>{
       let item = evt.changedTouches.item(0);
-      this.pointer.x = item.clientX;
-      this.pointer.y = item.clientY;
+      this.setPointerXY(item.clientX, item.clientY);
       this.onEvent("pointer-move");
     };
 
     /**@param {MouseEvent} evt*/
     this.onMouseDown = (evt)=>{
-      this.pointer.x = evt.clientX;
-      this.pointer.y = evt.clientY;
+      this.setPointerXY(evt.clientX, evt.clientY);
       if (evt.button === 0) {
         this.pointer.leftDown = true;
       } else if (evt.button === 1) {
@@ -40,14 +39,12 @@ export class Input {
     this.onTouchStart = (evt)=>{
       this.pointer.leftDown = true;
       let item = evt.changedTouches.item(0);
-      this.pointer.x = item.clientX;
-      this.pointer.y = item.clientY;
+      this.setPointerXY(item.clientX, item.clientY);
       this.onEvent("pointer-down");
     }
     /**@param {MouseEvent} evt*/
     this.onMouseUp = (evt)=>{
-      this.pointer.x = evt.clientX;
-      this.pointer.y = evt.clientY;
+      this.setPointerXY(evt.clientX, evt.clientY);
       if (evt.button === 0) {
         this.pointer.leftDown = false;
       } else if (evt.button === 1) {
@@ -59,8 +56,7 @@ export class Input {
     this.onTouchEnd = (evt)=>{
       this.pointer.leftDown = false;
       let item = evt.changedTouches.item(0);
-      this.pointer.x = item.clientX;
-      this.pointer.y = item.clientY;
+      this.setPointerXY(item.clientX, item.clientY);
       this.onEvent("pointer-up");
     }
     /**@param {KeyboardEvent} evt*/
@@ -77,6 +73,12 @@ export class Input {
      * @param {"key-up"|"key-down"|"pointer-up"|"pointer-down"} type
      * @type {Array<eventCallback>} */
     this.listeners = new Array();
+  }
+  setPointerXY (x, y) {
+    this.pointer.lx = this.pointer.x;
+    this.pointer.ly = this.pointer.y;
+    this.pointer.x = x;
+    this.pointer.y = y;
   }
   /**Listen to events
    * @param {eventCallback} cb
