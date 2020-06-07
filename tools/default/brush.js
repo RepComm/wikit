@@ -1,5 +1,5 @@
 
-import { dist, angle } from "../../code/utils/math.js";
+import { dist, angle, lerp } from "../../code/utils/math.js";
 import { Brush, API } from "../../code/api.js";
 
 /**@param {API} api*/
@@ -16,6 +16,7 @@ class DefaultBrush extends Brush {
     this.pointDist = 0;
 
     //Angle between last and current points
+    this.langle = 0;
     this.angle = 0;
 
     //The perpendicular of angle
@@ -51,6 +52,11 @@ class DefaultBrush extends Brush {
   onStroke(ctx, x, y, lx, ly) {
     this.pointDist = dist(x, y, lx, ly);
     this.angle = angle(x, y, lx, ly);
+    let closeFactor = (1 / ((Math.abs(x) - Math.abs(lx))+0.01))/100;
+    if (closeFactor > 1) closeFactor = 1;
+    
+    this.angle = lerp(this.angle, this.langle, closeFactor );
+    this.langle = this.angle;
     this.perpendicular = this.angle + Math.PI / 2;
 
     if (this.isNewStroke) {

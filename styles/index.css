@@ -2,7 +2,7 @@ body {
   margin: 0px;
   width: 100vw;
   height: 100vh;
-  overflow: hidden;
+  /* overflow: hidden; */
   background-color: rgb(82, 80, 78);
   display: flex;
   flex-direction: column;

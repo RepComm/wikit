@@ -125,7 +125,6 @@ fetch("./tools/package.json").then(resp => resp.json().then((pkg) => {
       }).catch((ex) => {
         throw ex;
       });
-
     }
   }
 }));
