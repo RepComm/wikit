@@ -130,22 +130,22 @@ fetch("./tools/package.json").then(resp => resp.json().then((pkg) => {
 }));
 
 let fsl = async ()=>{
-  if (document.fullscreenElement) {
+  if (document.fullscreenElement !== null) {
     return;
   }
   document.body.requestFullscreen({
-    navigationUI:false
+    navigationUI:"hide"
   }).then(()=>{
-    alert("You are now in fullscreen mode");
+    //alert("You are now in fullscreen mode");
     let viewer = new Viewer();
 
     viewer.mount(get("middle"));
     viewer.addLayer("main");
-    
+
     api.setViewer(viewer);
     api.viewer.resize();
   }).catch((reason)=>{
-    alert(reason);
+    //alert(reason);
   });
 };
 on(window, "click", fsl);
