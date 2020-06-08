@@ -108,11 +108,12 @@ export class OptionColor extends Option {
       .addClasses("optionsbox-option-color")
       .mount(this);
   }
-  get color () {
-    return this.input.value;
+  getColor () {
+    return this.input.element.value;
   }
-  set color (v) {
-    this.input.value = v;
+  color (v) {
+    this.input.element.value = v;
+    return this;
   }
   setRGB (r, g, b) {
     this.input.value = `rgb(${r},${g},${b})`;

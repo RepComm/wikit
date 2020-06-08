@@ -1,6 +1,7 @@
 
 import { Tool, API } from "../api.js";
 import { Component } from "./component.js";
+import { make } from "../utils/aliases.js";
 
 class ToolBox extends Component {
   /**@param {String} name displayed as toolbox name*/
@@ -12,6 +13,12 @@ class ToolBox extends Component {
 
     this.make("div");
     this.addClasses("toolbox");
+
+    this.endSpace = new Component()
+      .make("div")
+      .mountChild(make("br"))
+      .mountChild(make("br"))
+      .mountChild(make("br"));
 
     this.activeTool;
 
@@ -28,8 +35,8 @@ class ToolBox extends Component {
   setActiveTool(tool) {
     this.activeTool = tool;
     API.Global.config.removeChildren();
-    
     tool.options.mount(API.Global.config);
+    this.endSpace.mount(tool.options);
   }
 }
 

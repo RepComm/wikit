@@ -173,15 +173,15 @@ export class Tool {
 
 export class Brush extends Tool {
   /**@type {string} foreground color*/
-  static fgColor = "white";
+  static fgColor = "#ffffff";
   static fgColorOpt = new OptionColor("fg","foreground").on("change", (evt)=>{
     Brush.fgColor = evt.target.value;
-  });
+  }).color(Brush.fgColor);
   /**@type {string} background color*/
-  static bgColor = "black";
+  static bgColor = "#000000";
   static bgColorOpt = new OptionColor("bg","background").on("change", (evt)=>{
     Brush.bgColor = evt.target.value;
-  });
+  }).color(Brush.bgColor);
   /**@type {number} width in pixels*/
   static width = 1;
   static widthOpt = new OptionNumber("width","width")
@@ -197,21 +197,15 @@ export class Brush extends Tool {
       Brush.opacity = evt.target.valueAsNumber;
     });
   
-
   constructor(name) {
     super(name);
-
     /**@type {OptionsBox} ui container*/
     this.options = new OptionsBox(`${name} options`);
     this.options.add(Brush.opacityOpt);
     this.options.add(Brush.fgColorOpt);
     this.options.add(Brush.bgColorOpt);
     this.options.add(Brush.widthOpt);
-
-    /**@type {string} icon image reference*/
-    this.icon = "";
   }
-
   /**Override this to provide your own stroke behaviour
    * @virtual
    * @param {CanvasRenderingContext2D} ctx current render context
