@@ -3,7 +3,7 @@ import { API } from "./api.js";
 import { Menu } from "./components/menu.js";
 import { Viewer } from "./components/viewer.js";
 import { ChoiceBox } from "./components/choicebox.js";
-import { get, on } from "./utils/aliases.js";
+import { get, on, off } from "./utils/aliases.js";
 
 /**File open dialog
  * Returns a promise that contains the files
@@ -109,13 +109,13 @@ menuHelp.sub("Docs", () => {
   alert("Not implemented yet");
 });
 
-let viewer = new Viewer();
+// let viewer = new Viewer();
 
-viewer.mount(get("middle"));
-viewer.addLayer("main");
+// viewer.mount(get("middle"));
+// viewer.addLayer("main");
 
 let api = new API();
-api.setViewer(viewer);
+//api.setViewer(viewer);
 
 fetch("./tools/package.json").then(resp => resp.json().then((pkg) => {
   for (let toolInfo of pkg.installed) {
@@ -128,3 +128,24 @@ fetch("./tools/package.json").then(resp => resp.json().then((pkg) => {
     }
   }
 }));
+
+let fsl = async ()=>{
+  if (document.fullscreenElement) {
+    return;
+  }
+  document.body.requestFullscreen({
+    navigationUI:false
+  }).then(()=>{
+    alert("You are now in fullscreen mode");
+    let viewer = new Viewer();
+
+    viewer.mount(get("middle"));
+    viewer.addLayer("main");
+    
+    api.setViewer(viewer);
+    api.viewer.resize();
+  }).catch((reason)=>{
+    alert(reason);
+  });
+};
+on(window, "click", fsl);
