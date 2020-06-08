@@ -21,6 +21,11 @@ body {
   flex: 30 0 0;
   display: flex;
 }
+@media (orientation: portrait) {
+  #content {
+    flex-direction:column;
+  }
+}
 
 #left {
   flex: 0 0 20%;
