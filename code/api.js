@@ -205,6 +205,24 @@ export class Brush extends Tool {
     this.options.add(Brush.fgColorOpt);
     this.options.add(Brush.bgColorOpt);
     this.options.add(Brush.widthOpt);
+    this.isNewStroke = true;
+  }
+  onEvent(type) {
+    if (!API.Global.viewer.pointObjInside(API.Global.input.pointer)) return;
+    if (type === "pointer-up") {
+      this.isNewStroke = true;
+    }
+    if (type === "pointer-move") {
+      if (API.Global.input.pointer.leftDown) {
+        this.onStroke(
+          API.Global.viewer.ctxActive,
+          API.Global.input.pointer.x - API.Global.viewer.rect.x,
+          API.Global.input.pointer.y - API.Global.viewer.rect.y,
+          API.Global.input.pointer.lx - API.Global.viewer.rect.x,
+          API.Global.input.pointer.ly - API.Global.viewer.rect.y
+        );
+      }
+    }
   }
   /**Override this to provide your own stroke behaviour
    * @virtual

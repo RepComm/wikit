@@ -36,8 +36,8 @@ get("menu-subdisplay").addEventListener("mouseleave", () => menu.hideSubMenu());
 
 let fileOpenOptions = new ChoiceBox("How would you like to open this image?")
   .choice("new-image", "as new project", "Frees data and loads as a layer")
-  .choice("active-layer","into active layer", "Places into the active layer image")
-  .choice("add-layer","as new layer", "Creates a layer")
+  .choice("active-layer", "into active layer", "Places into the active layer image")
+  .choice("add-layer", "as new layer", "Creates a layer")
   .mount(document.body);
 
 let menuFile = menu.add("File", (e) => e.preventDefault())
@@ -129,22 +129,26 @@ fetch("./tools/package.json").then(resp => resp.json().then((pkg) => {
   }
 }));
 
-let fsl = async ()=>{
+let viewer = undefined;
+
+let fsl = async () => {
   if (document.fullscreenElement !== null) {
     return;
   }
   document.body.requestFullscreen({
-    navigationUI:"hide"
-  }).then(()=>{
+    navigationUI: "hide"
+  }).then(() => {
     //alert("You are now in fullscreen mode");
-    let viewer = new Viewer();
+    if (!viewer) {
+      viewer = new Viewer();
 
-    viewer.mount(get("middle"));
-    viewer.addLayer("main");
+      viewer.mount(get("middle"));
+      viewer.addLayer("main");
 
-    api.setViewer(viewer);
+      api.setViewer(viewer);
+    }
     api.viewer.resize();
-  }).catch((reason)=>{
+  }).catch((reason) => {
     //alert(reason);
   });
 };

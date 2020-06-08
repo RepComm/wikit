@@ -332,4 +332,11 @@ export class Viewer extends Component {
   getLayerByIndex(ind) {
     return this.layers[ind];
   }
+
+  pointInside(x, y) {
+    return (x > this.rect.left && x < this.rect.right && y > this.rect.top && y < this.rect.bottom);
+  }
+  pointObjInside(point) {
+    return this.pointInside(point.x, point.y);
+  }
 }

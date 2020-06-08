@@ -28,25 +28,6 @@ class DefaultBrush extends Brush {
       tl:{x:0, y:0},
       tr:{x:0, y:0}
     };
-
-    this.isNewStroke = true;
-  }
-
-  onEvent(type) {
-    if (type === "pointer-up") {
-      this.isNewStroke = true;
-    }
-    if (type === "pointer-move") {
-      if (API.Global.input.pointer.leftDown) {
-        this.onStroke(
-          API.Global.viewer.ctxActive,
-          API.Global.input.pointer.x - API.Global.viewer.rect.x,
-          API.Global.input.pointer.y - API.Global.viewer.rect.y,
-          API.Global.input.pointer.lx - API.Global.viewer.rect.x,
-          API.Global.input.pointer.ly - API.Global.viewer.rect.y
-        );
-      }
-    }
   }
 
   onStroke(ctx, x, y, lx, ly) {

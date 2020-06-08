@@ -46,6 +46,7 @@ class GradientFilter extends Filter {
     this.options.add(this.bgColorOpt);
   }
   onEvent(type) {
+    if (!API.Global.viewer.pointObjInside(API.Global.input.pointer)) return;
     if (type === "pointer-up") {
       this.setTo(
         API.Global.input.pointer.x - API.Global.viewer.rect.left,
