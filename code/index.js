@@ -44,8 +44,7 @@ let menuFile = menu.add("File", (e) => e.preventDefault())
   .sub("New", () => { })
   .sub("Open (CTRL+O)", async () => {
     let files = await fget();
-    if (!files.length > 0) return;
-
+    if (files.length < 1) return;
     let fr = new FileReader();
     on(fr, "load", (evt) => {
       let img = new Image();
@@ -130,6 +129,12 @@ fetch("./tools/package.json").then(resp => resp.json().then((pkg) => {
 }));
 
 let viewer = undefined;
+viewer = new Viewer();
+
+viewer.mount(get("middle"));
+viewer.addLayer("main");
+
+api.setViewer(viewer);
 
 let fsl = async () => {
   if (document.fullscreenElement !== null) {
@@ -152,4 +157,4 @@ let fsl = async () => {
     //alert(reason);
   });
 };
-on(window, "click", fsl);
+//on(window, "click", fsl);

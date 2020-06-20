@@ -1,9 +1,12 @@
 
 import { API, Kernel, KernelFilter } from "../../code/api.js";
+import { OptionNumber, OptionButton } from "../../code/components/optionsbox.js";
 
 /**@param {API} api*/
 export default function onRegister(api) {
-  api.registerFilter(new BlurFilter());
+  let tool = new BlurFilter();
+  api.registerFilter(tool);
+  api.addPaletteButton(tool).icon("./tools/default/brush-icon.svg");
 }
 
 /**@author https://gist.github.com/uhho
@@ -41,6 +44,16 @@ class BlurFilter extends KernelFilter {
     this.kernel.radius = 3;
     this.kernel.normalize();
 
-    window.fblur = this;
+    this.kernelWidthOpt = new OptionNumber("r","radius")
+    .min(2).max(9).step(1).on("change", (evt)=>{
+      this.kernel.radius = evt.target.value;
+    }).value(this.kernel.radius);
+    this.options.add(this.kernelWidthOpt);
+
+    this.performBtn = new OptionButton("p","perform")
+    .on("click", ()=>{
+      this.perform(API.Global.viewer, API.Global.viewer.activeLayer, false);
+    });
+    this.options.add(this.performBtn);
   }
 }

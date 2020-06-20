@@ -2,9 +2,6 @@
 import { API, Filter } from "../../code/api.js";
 import { OptionColor } from "../../code/components/optionsbox.js";
 
-/**@type {API} */
-let _api;
-
 /**@param {API} api*/
 export default function onRegister(api) {
   let tool = new GradientFilter();
@@ -46,7 +43,6 @@ class GradientFilter extends Filter {
     this.options.add(this.bgColorOpt);
   }
   onEvent(type) {
-    if (!API.Global.viewer.pointObjInside(API.Global.input.pointer)) return;
     if (type === "pointer-up") {
       this.setTo(
         API.Global.input.pointer.x - API.Global.viewer.rect.left,

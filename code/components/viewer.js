@@ -332,10 +332,18 @@ export class Viewer extends Component {
   getLayerByIndex(ind) {
     return this.layers[ind];
   }
-
+  /**Check if a point is inside the viewer
+   * @param {number} x
+   * @param {number} y
+   * @returns {boolean}
+   */
   pointInside(x, y) {
     return (x > this.rect.left && x < this.rect.right && y > this.rect.top && y < this.rect.bottom);
   }
+  /**Check if a point is inside the viewer
+   * @param {{x:number,y:number}} point
+   * @returns {boolean}
+   */
   pointObjInside(point) {
     return this.pointInside(point.x, point.y);
   }

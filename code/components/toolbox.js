@@ -27,7 +27,15 @@ class ToolBox extends Component {
   
   onEvent(type) {
     if (this.activeTool) {
-      this.activeTool.onEvent(type);
+      if (type === "pointer-move") {
+        if (API.Global.viewer.pointObjInside(
+          API.Global.input.pointer
+        )) {
+          this.activeTool.onEvent(type);
+        }
+      } else {
+        this.activeTool.onEvent(type);
+      }
     }
   }
 

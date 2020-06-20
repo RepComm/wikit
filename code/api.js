@@ -208,7 +208,6 @@ export class Brush extends Tool {
     this.isNewStroke = true;
   }
   onEvent(type) {
-    if (!API.Global.viewer.pointObjInside(API.Global.input.pointer)) return;
     if (type === "pointer-up") {
       this.isNewStroke = true;
     }

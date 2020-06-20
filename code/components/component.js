@@ -109,11 +109,11 @@ export class Component {
   }
 
   hide () {
-    this.element.style.display = "none";
+    this.addClasses("hide");
     return this;
   }
   show () {
-    this.element.style.display = "unset";
+    this.removeClasses("hide");
     return this;
   }
   set left (x) {
