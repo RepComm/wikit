@@ -1,21 +1,19 @@
-# WiKiT
-A modular HTML5 image editor written in JS
+# ts-map-babel-template
 
-Reworking to fit things I've learned in the past months of coding
+A template setup for:
+- TypeScript ( using [babel](https://github.com/babel/babel) )
+- import maps ( including [this polyfill](https://github.com/guybedford/es-module-shims) )
+- And also optionally [show-casing @roguecircuitry/htmless](https://github.com/RogueCircuitry/htmless)
 
-Implemented filters
-- Grayscale
-- Basic sobel edge
-- Gaussian blur
-- Gradient
+## Function
 
-Implemented classes:
-- Component - Centralized UI creation/modification (I can't stand using libraries..)
-- Input - Event based and procedural functionality
-- Kernel - For creating / updating image kernels
-- Tool - base class for all tools
-- - Filter - for manual layer manipulation
-- - - PixelFilter - for easy pixel manipulation
-- - - - KernelFilter - for kernel and equation based manipulation
-- - - MultiKernelFilter - for multi-kernel processing (needs rework)
-- - Brush - for easy brush creation
+Compile /src directory with:
+`npm run build`
+<br/>
+File copy is set up as well for:
+`src/index.ts` -> `./index.js`<br/>
+`src/index.html` -> `./index.html`
+
+Output is in the same directory as package.json for sake of import maps
+
+I regularly use this for starting new projects of my own, and therefor it should stay somewhat up-to-date.

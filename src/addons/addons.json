@@ -1,0 +1,12 @@
+{
+  "addons": [
+    {
+      "active": true,
+      "id": "pencil"
+    },
+    {
+      "active": true,
+      "id": "lasso"
+    }
+  ]
+}

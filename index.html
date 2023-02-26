@@ -1,38 +1,20 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html>
+  <head>
+    
+    <!--Polyfill for using import maps (in my case for firefox)-->
+    <script async src="./es-module-shims.js"></script>
 
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>WiKiT</title>
-  <link rel="stylesheet" href="./styles/index.css" />
-  <link rel="stylesheet" href="./styles/menu.css" />
-  <link rel="stylesheet" href="./styles/fonts.css" />
-  <link rel="stylesheet" href="./styles/choicebox.css" />
-  <link rel="stylesheet" href="./styles/toolbox.css" />
-  <link rel="stylesheet" href="./styles/optionsbox.css" />
-  <link rel="stylesheet" href="./styles/viewer.css" />
-</head>
-<body>
-  <input id="f-in" type="file" style="display:none" />
-  <a id="f-out" download="" style="display:none"></a>
-  <div id="menu-main" class="menu fontbody">
-  </div>
-  <div id="content">
-    <div id="left">
-
-    </div>
-    <div id="middle">
-      <!-- Tap/Click to enter fullscreen mode -->
-    </div>
-    <div id="right">
-
-    </div>
-  </div>
-  <div id="menu-subdisplay" class="menu-subdisplay fontbody">
-
-  </div>
-  <script defer src="./code/index.js" type="module"></script>
-</body>
-
+    <!--Map my own depednecy to its node_modules location, you can do this for other deps too!-->
+    <script type="importmap">
+    {
+      "imports": {
+        "@roguecircuitry/htmless": "./node_modules/@roguecircuitry/htmless/mod.js"
+      }
+    }
+    </script>
+  </head>
+  <body>
+    <script type="module" src="./index.js"></script>
+  </body>
 </html>
