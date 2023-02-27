@@ -1,19 +1,17 @@
-# ts-map-babel-template
+# WIKit
 
-A template setup for:
-- TypeScript ( using [babel](https://github.com/babel/babel) )
-- import maps ( including [this polyfill](https://github.com/guybedford/es-module-shims) )
-- And also optionally [show-casing @roguecircuitry/htmless](https://github.com/RogueCircuitry/htmless)
+WebGL Image Kit
 
-## Function
+An image editor in the browser
 
-Compile /src directory with:
-`npm run build`
-<br/>
-File copy is set up as well for:
-`src/index.ts` -> `./index.js`<br/>
-`src/index.html` -> `./index.html`
+Attempts to somewhat mimick GIMP, but with a fancy interface that makes you think some rando didn't make it
 
-Output is in the same directory as package.json for sake of import maps
+![example.png](./example.png)
 
-I regularly use this for starting new projects of my own, and therefor it should stay somewhat up-to-date.
+## Dependencies
+- [twgl.js](https://github.com/greggman/twgl.js) -> minimal webgl wrapper (this one wasn't a pain to use!)
+- [@roguecircuitry/htmless](https://github.com/roguecircuitry/htmless) -> JS DOM api wrapper (homebrew)
+- [es-module-shims](https://github.com/guybedford/es-module-shims) -> use import maps without pain
+
+## Build dependencies
+- [babel.js](https://github.com/babel/babel) -> TypeScript compile step

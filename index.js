@@ -1,5 +1,6 @@
 import { exponent, UIBuilder } from "@roguecircuitry/htmless";
 import { API } from "./api.js";
+import { Renderer } from "./renderer.js";
 async function main() {
   let ui = new UIBuilder();
   ui.default(exponent);
@@ -227,6 +228,9 @@ async function main() {
     ui.ref(tool.elements.optionsContainer).mount(options);
   });
   api.fetchAddonsJson(); //load addons
-}
 
+  let canvas = ui.create("canvas", "renderer").mount(editor).e;
+  let renderer = new Renderer(canvas);
+  renderer.start();
+}
 main();

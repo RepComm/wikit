@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@repcomm/vec2d": "^1.1.1",
-    "@roguecircuitry/htmless": "github:roguecircuitry/htmless"
+    "@roguecircuitry/htmless": "github:roguecircuitry/htmless",
+    "twgl.js": "^5.3.0"
   }
 }

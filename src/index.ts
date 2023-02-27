@@ -1,6 +1,7 @@
 
 import { exponent, UIBuilder } from "@roguecircuitry/htmless";
 import { API } from "./api.js";
+import { Renderer } from "./renderer.js";
 
 async function main() {
 
@@ -274,6 +275,12 @@ async function main() {
   });
 
   api.fetchAddonsJson(); //load addons
+
+  let canvas = ui.create("canvas", "renderer").mount(editor).e;
+
+  let renderer = new Renderer(canvas);
+
+  renderer.start();
 }
 
 main();
