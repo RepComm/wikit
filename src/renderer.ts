@@ -53,7 +53,15 @@ export class Renderer {
       }
       `]),
       arrays: {
-        position: [-1, -1, 0, 1, -1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1, 1, 0]
+        position: [
+          -1, -1, 0,
+          1, -1, 0,
+          -1, 1, 0,
+
+          -1, 1, 0,
+          1, -1, 0,
+          1, 1, 0
+        ]
       },
       info: undefined,
       uniforms: {
