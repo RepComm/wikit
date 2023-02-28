@@ -13,6 +13,7 @@ Implement brushes
   - [possible] quad GLSL texture (prebake) support
   - quads should be instances for performance, allowing complicated brush strokes with low memory/bus footprint
   - instancing still provides ability to do dynamic coloring per quad during stroke, as well as size variation
+  - quads rendered with MAX blend equation during strokes so alpha channels don't add together: see https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/blendEquation
 
 Implement layer effects
 - post processing (post-bake)

@@ -2,6 +2,7 @@
 import type { API } from "../../api";
 
 export function init (api: API) {
+
   api.register_tool({
     id: "pencil",
     name: "Pencil",
