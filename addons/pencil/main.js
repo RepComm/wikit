@@ -22,6 +22,7 @@ export function init(api) {
           default: "#ffffff"
         }
       }
-    }
+    },
+    on_path: path => {}
   });
 }

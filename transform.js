@@ -1,158 +1,142 @@
-
-import { m4, v3 } from "twgl.js"
-
+import { m4, v3 } from "twgl.js";
 export class Vector3 {
-  data: v3.Vec3;
-
-  set x (v: number) {
+  set x(v) {
     this.data[0] = v;
   }
-  set y (v: number) {
+  set y(v) {
     this.data[1] = v;
   }
-  set z (v: number) {
+  set z(v) {
     this.data[2] = v;
   }
-
-  get x () {
+  get x() {
     return this.data[0];
   }
-  get y () {
+  get y() {
     return this.data[1];
   }
-  get z () {
+  get z() {
     return this.data[2];
   }
-
-  constructor (x: number = 0, y: number = 0, z: number = 0) {
+  constructor(x = 0, y = 0, z = 0) {
     this.data = v3.create(x, y, z);
   }
-  add (v: Vector3) {
+  add(v) {
     v3.add(this.data, v.data, this.data);
     return this;
   }
-  sub (v: Vector3) {
+  sub(v) {
     v3.subtract(this.data, v.data, this.data);
     return this;
   }
-  mul (v: Vector3) {
+  mul(v) {
     v3.multiply(this.data, v.data, this.data);
     return this;
   }
-  mulScalar (v: number) {
+  mulScalar(v) {
     v3.mulScalar(this.data, v, this.data);
     return this;
   }
-  div (v: Vector3) {
+  div(v) {
     v3.divide(this.data, v.data, this.data);
     return this;
   }
-  divScalar (v: number) {
+  divScalar(v) {
     v3.divScalar(this.data, v, this.data);
     return this;
   }
-  dot (v: Vector3) {
+  dot(v) {
     return v3.dot(this.data, v.data);
   }
-  lerp (v: Vector3, by: number) {
+  lerp(v, by) {
     v3.lerp(this.data, v.data, by, this.data);
     return this;
   }
-  lerpV (v: Vector3, by: Vector3) {
+  lerpV(v, by) {
     v3.lerpV(this.data, v.data, by.data, this.data);
     return this;
   }
-  cross (v: Vector3) {
+  cross(v) {
     v3.cross(this.data, v.data, this.data);
     return this;
   }
-  dist (v: Vector3) {
+  dist(v) {
     return v3.distance(this.data, v.data);
   }
-  distSq (v: Vector3) {
+  distSq(v) {
     return v3.distanceSq(this.data, v.data);
   }
-  length () {
+  length() {
     return v3.length(this.data);
   }
-  lengthSq () {
+  lengthSq() {
     return v3.lengthSq(this.data);
   }
-  min (v: Vector3) {
+  min(v) {
     v3.min(this.data, v.data, this.data);
     return this;
   }
-  max (v: Vector3) {
+  max(v) {
     v3.max(this.data, v.data, this.data);
     return this;
   }
-  normalize () {
+  normalize() {
     v3.normalize(this.data, this.data);
     return this;
   }
-  set (x: number = 0, y: number = 0, z: number = 0) {
+  set(x = 0, y = 0, z = 0) {
     this.x = x;
     this.y = y;
     this.z = z;
     return this;
   }
-  toString () {
+  toString() {
     return `{x: ${this.x},y:${this.y},z:${this.z}}`;
   }
 }
-
 export class Transform {
-  position: Vector3;
-  
-  matrix: m4.Mat4;
-
-  euler: Vector3;
-
-  scale: Vector3;
-
-  constructor () {
+  constructor() {
     this.matrix = m4.identity();
     this.position = new Vector3();
     this.euler = new Vector3();
-    this.scale = new Vector3(1,1,1);
+    this.scale = new Vector3(1, 1, 1);
   }
-  setPos (x: number = 0, y: number = 0, z: number = 0) {
+  setPos(x = 0, y = 0, z = 0) {
     this.position.set(x, y, z);
     return this;
   }
-  setEuler (x: number = 0, y: number = 0, z: number = 0) {
+  setEuler(x = 0, y = 0, z = 0) {
     this.euler.set(x, y, z);
     return this;
   }
-  setScale (x: number = 1, y: number = 1, z: number = 1) {
+  setScale(x = 1, y = 1, z = 1) {
     this.scale.set(x, y, z);
     return this;
   }
-  render () {
+  render() {
     m4.identity(this.matrix);
     m4.translate(this.matrix, this.position.data);
     m4.rotateX(this.matrix, this.euler.x);
     m4.rotateY(this.matrix, this.euler.y);
     m4.rotateZ(this.matrix, this.euler.z);
   }
-  copyMatrixToBuffer (dst: Float32Array, offset: number) {
-    dst[ 0 + offset] = this.matrix[ 0];
-    dst[ 1 + offset] = this.matrix[ 1];
-    dst[ 2 + offset] = this.matrix[ 2];
-    dst[ 3 + offset] = this.matrix[ 3];
-    dst[ 4 + offset] = this.matrix[ 4];
-    dst[ 5 + offset] = this.matrix[ 5];
-    dst[ 6 + offset] = this.matrix[ 6];
-    dst[ 7 + offset] = this.matrix[ 7];
-    dst[ 8 + offset] = this.matrix[ 8];
-    dst[ 9 + offset] = this.matrix[ 9];
+  copyMatrixToBuffer(dst, offset) {
+    dst[0 + offset] = this.matrix[0];
+    dst[1 + offset] = this.matrix[1];
+    dst[2 + offset] = this.matrix[2];
+    dst[3 + offset] = this.matrix[3];
+    dst[4 + offset] = this.matrix[4];
+    dst[5 + offset] = this.matrix[5];
+    dst[6 + offset] = this.matrix[6];
+    dst[7 + offset] = this.matrix[7];
+    dst[8 + offset] = this.matrix[8];
+    dst[9 + offset] = this.matrix[9];
     dst[10 + offset] = this.matrix[10];
     dst[11 + offset] = this.matrix[11];
     dst[12 + offset] = this.matrix[12];
     dst[13 + offset] = this.matrix[13];
     dst[14 + offset] = this.matrix[14];
     dst[15 + offset] = this.matrix[15];
-  
     return this;
   }
 }
