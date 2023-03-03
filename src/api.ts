@@ -2,12 +2,12 @@
 import { Vec2 } from "@repcomm/vec2d";
 import { EventDispatcher } from "./events.js";
 
-export interface Path {
+export interface ToolPath {
   points: Array<Vec2>;
 }
 
-export interface ToolPath {
-  path: Path;
+export interface ToolPathListener {
+  (path: ToolPath): void;
 }
 
 export interface ToolSegment {
@@ -46,7 +46,7 @@ export interface ToolConfig {
   id: string;
   name: string;
   description: string;
-  on_path?: ToolPath;
+  on_path?: ToolPathListener;
   on_segment?: ToolSegment;
   elements?: {
     button?: HTMLDivElement;

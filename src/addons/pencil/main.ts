@@ -1,5 +1,5 @@
 
-import type { API } from "../../api";
+import type { API, ToolPath } from "../../api";
 
 export function init (api: API) {
 
@@ -25,6 +25,9 @@ export function init (api: API) {
           default: "#ffffff"
         }
       }
+    },
+    on_path: (path: ToolPath)=>{
+      
     }
   });
   

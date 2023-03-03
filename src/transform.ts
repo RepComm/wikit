@@ -4,6 +4,16 @@ import { m4, v3 } from "twgl.js"
 export class Vector3 {
   data: v3.Vec3;
 
+  set x (v: number) {
+    this.data[0] = v;
+  }
+  set y (v: number) {
+    this.data[1] = v;
+  }
+  set z (v: number) {
+    this.data[2] = v;
+  }
+
   get x () {
     return this.data[0];
   }
@@ -80,6 +90,15 @@ export class Vector3 {
     v3.normalize(this.data, this.data);
     return this;
   }
+  set (x: number = 0, y: number = 0, z: number = 0) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    return this;
+  }
+  toString () {
+    return `{x: ${this.x},y:${this.y},z:${this.z}}`;
+  }
 }
 
 export class Transform {
@@ -96,6 +115,18 @@ export class Transform {
     this.position = new Vector3();
     this.euler = new Vector3();
     this.scale = new Vector3(1,1,1);
+  }
+  setPos (x: number = 0, y: number = 0, z: number = 0) {
+    this.position.set(x, y, z);
+    return this;
+  }
+  setEuler (x: number = 0, y: number = 0, z: number = 0) {
+    this.euler.set(x, y, z);
+    return this;
+  }
+  setScale (x: number = 1, y: number = 1, z: number = 1) {
+    this.scale.set(x, y, z);
+    return this;
   }
   render () {
     m4.identity(this.matrix);

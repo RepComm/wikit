@@ -1,5 +1,6 @@
 
 import { Arrays, BufferInfo, createBufferInfoFromArrays, createProgramInfo, drawBufferInfo, ProgramInfo, setBuffersAndAttributes, setUniforms } from "twgl.js"
+import { Transform } from "./transform.js";
 
 export interface Uniforms {
   [key: string]: any;
@@ -12,11 +13,89 @@ export interface Model {
   uniforms: Uniforms;
 }
 
+export class InstanceableModel {
+  private _original: InstanceableModel | undefined;
+
+  get original() {
+    if (this.isOriginal) return this;
+    else return this._original;
+  }
+
+  private _count: number;
+
+  get count() {
+    if (this.isOriginal) return this._count;
+    else return this._original._count;
+  }
+
+  private _max: number;
+
+  get max() {
+    if (this.isOriginal) return this._max;
+    else return this._original._max;
+  }
+
+  private _all: Set<InstanceableModel>;
+  get all() {
+    if (this.isOriginal) return this._all;
+    else return this._original._all;
+  }
+
+  isGarbage: boolean;
+
+  transform: Transform;
+
+  constructor(original?: InstanceableModel) {
+    this._original = original;
+
+    if (this.isOriginal) {
+      this._count = 1;
+      this._all = new Set();
+    }
+
+    this.transform = new Transform();
+  }
+  get isOriginal() {
+    return this._original === undefined;
+  }
+  static onInstance(inst: InstanceableModel) {
+    inst.all.add(inst);
+    inst._original._count++;
+  }
+  static onDeinstance(inst: InstanceableModel) {
+    inst.isGarbage = true;
+    inst.all.delete(inst);
+  }
+  /**Returns a new instance, or null if instancing would create more than original.max instances*/
+  instance(): InstanceableModel | null {
+    let result: InstanceableModel;
+
+    if (this.isOriginal) {
+      if (this._count + 1 > this._max) return null;
+
+      result = new InstanceableModel(this);
+
+      InstanceableModel.onInstance(result);
+
+      return result;
+    } else {
+      return this._original.instance();
+    }
+  }
+  deinstance(): boolean {
+    if (this.isOriginal) return false; // not possible
+    InstanceableModel.onDeinstance(this);
+    return true;
+  }
+}
+
 export class Renderer {
   canvas: HTMLCanvasElement;
   gl: WebGL2RenderingContext;
 
   model: Model;
+
+  quadBrush: InstanceableModel;
 
   time: number;
   renderCallback: FrameRequestCallback;
@@ -27,6 +106,14 @@ export class Renderer {
     this.gl = this.canvas.getContext("webgl2");
 
     this.time = Date.now();
+
+    this.quadBrush = new InstanceableModel();
+
+    this.quadBrush
+      .instance()
+      .transform
+      .setPos(0, 0, 0)
+      .setEuler(0, Math.PI / 2, 0);
 
     this.model = {
       material: createProgramInfo(this.gl, [`
@@ -71,18 +158,18 @@ export class Renderer {
     };
     this.model.info = createBufferInfoFromArrays(this.gl, this.model.arrays);
 
-    this.renderCallback = (time)=>{
+    this.renderCallback = (time) => {
       this.time = time;
       this.render();
 
       if (this.scheduleNextFrame) requestAnimationFrame(this.renderCallback);
     };
   }
-  start () {
+  start() {
     this.scheduleNextFrame = true;
     requestAnimationFrame(this.renderCallback);
   }
-  stop () {
+  stop() {
     this.scheduleNextFrame = false;
   }
   render() {
