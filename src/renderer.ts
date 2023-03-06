@@ -1,5 +1,5 @@
 
-import { Arrays, BufferInfo, createBufferInfoFromArrays, createProgramInfo, drawBufferInfo, ProgramInfo, setBuffersAndAttributes, setUniforms, m4, primitives, createVertexArrayInfo, VertexArrayInfo, resizeCanvasToDisplaySize, addExtensionsToContext } from "twgl.js"
+import { Arrays, BufferInfo, createBufferInfoFromArrays, createProgramInfo, drawBufferInfo, ProgramInfo, setBuffersAndAttributes, setUniforms, m4, primitives, createVertexArrayInfo, VertexArrayInfo, resizeCanvasToDisplaySize, addExtensionsToContext, v3 } from "twgl.js"
 import { Transform, Vector3 } from "./transform.js";
 
 export interface Uniforms {
@@ -11,6 +11,9 @@ export interface Model {
   info: BufferInfo;
   material: ProgramInfo;
   uniforms: Uniforms;
+  vertexArrayInfo: VertexArrayInfo;
+  max: number;
+  count: number;
 }
 
 export class Shader {
@@ -274,77 +277,124 @@ export class Renderer {
     this.quadBrush = new InstanceableModel();
 
     this.quadBrush.shader = new Shader(`
-    attribute vec4 instanceColor;
-    attribute mat4 worldMatrix;
-    attribute vec4 position;
+    uniform mat4 u_viewProjection;
 
+    attribute vec4 instanceColor;
+    attribute mat4 instanceWorld;
+    attribute vec4 position;
+    attribute vec3 normal;
+
+    varying vec4 v_position;
+    varying vec3 v_normal;
     varying vec4 v_color;
 
     void main() {
+      gl_Position = u_viewProjection * instanceWorld * position;
       v_color = instanceColor;
-      
-      //gl_Position = worldMatrix * position;
-      gl_Position = position;
+      v_normal = (instanceWorld * vec4(normal, 0)).xyz;
     }
     `,`
     precision mediump float;
+
+    varying vec3 v_normal;
     varying vec4 v_color;
+
+    uniform vec3 u_lightDir;
+
     void main() {
-      //gl_FragColor = vec4(1.0, 0.5, 0.5, 1.0); // v_color;
-      gl_FragColor = v_color;
-    }`);
-
-    for (let i=0; i<40; i++) {
-      this.quadBrush
-        .instance()
-        .transform
-        .setPos(Math.random()*2-1, Math.random()*2-1, 0);
-        // .setEuler(0, Math.PI / 2, 0);
+      vec3 a_normal = normalize(v_normal);
+      float light = dot(u_lightDir, a_normal) * .5 + .5;
+      gl_FragColor = vec4(v_color.rgb * light, v_color.a);
     }
-    let z = -0.9;
+    `);
 
-    this.model = {
-      material: createProgramInfo(this.gl, [`
-      attribute vec4 position;
+    this.quadBrush.shader.build(this.gl);
 
-      void main() {
-        gl_Position = position;
-      }`, `
-      precision mediump float;
+    // for (let i=0; i<40; i++) {
+    //   this.quadBrush
+    //     .instance()
+    //     .transform
+    //     .setPos(Math.random()*2-1, Math.random()*2-1, 0);
+    //     // .setEuler(0, Math.PI / 2, 0);
+    // }
 
-      uniform vec2 resolution;
-      uniform float time;
-
-      void main() {
-        vec2 uv = gl_FragCoord.xy / resolution;
-        float color = 0.0;
-        // lifted from glslsandbox.com
-        color += sin( uv.x * cos( time / 3.0 ) * 60.0 ) + cos( uv.y * cos( time / 2.80 ) * 10.0 );
-        color += sin( uv.y * sin( time / 2.0 ) * 40.0 ) + cos( uv.x * sin( time / 1.70 ) * 40.0 );
-        color += sin( uv.x * sin( time / 1.0 ) * 10.0 ) + sin( uv.y * sin( time / 3.50 ) * 80.0 );
-        color *= sin( time / 10.0 ) * 0.5;
-
-        gl_FragColor = vec4( vec3( color * 0.5, sin( color + time / 2.5 ) * 0.75, color ), 1.0 );
+    function rand(min: number, max?: number): number {
+      if (max === undefined) {
+        max = min;
+        min = 0;
       }
-      `]),
-      arrays: {
-        position: [
-          -1, -1, z,
-          1, -1,  z,
-          -1, 1,  z,
+      return min + Math.random() * (max - min);
+    }
+  
+    const max = 10000;
+    let count = max;
+    const matrixWorlds = new Float32Array(max * 16);
 
-          -1, 1,  z,
-          1, -1,  z,
-          1, 1,   z
+    const colors = [];
+    const r = 100;
+    for (let i = 0; i < max; ++i) {
+      
+      const mat = new Float32Array(matrixWorlds.buffer, i * 16 * 4, 16);
+      
+      m4.translation([rand(-r, r), rand(-r, r), rand(-r, r)], mat);
+      let rz = rand(0, Math.PI * 2);
+      let rx = rand(0, Math.PI * 2);
+      m4.rotateZ(mat, rz, mat);
+      m4.rotateX(mat, rx, mat);
+      colors.push(rand(1), rand(1), rand(1));
+      
+    }
+
+    const arrays = {
+      position:{
+        numComponents:2,
+        data: [
+          -1, -1,
+           1, -1,
+          -1,  1,
+           1,  1
         ]
       },
-      info: undefined,
-      uniforms: {
-        time: this.time,
-        resolution: [this.canvas.width, this.canvas.height]
-      }
+      normal:[
+        0,0,1,0,0,1,0,0,1,0,0,1
+      ],
+      texcoord: [
+        0,0,1,0,0,1,1,1
+      ],
+      indices:[ 
+        0,1,2,2,1,3
+      ]
     };
-    this.model.info = createBufferInfoFromArrays(this.gl, this.model.arrays);
+    // console.log(JSON.stringify(arrays));
+    
+    Object.assign(arrays, {
+      instanceWorld: {
+        numComponents: 16,
+        data: matrixWorlds,
+        divisor: 1,
+      },
+      instanceColor: {
+        numComponents: 3,
+        data: colors,
+        divisor: 1,
+      },
+    });
+    const info = createBufferInfoFromArrays(this.gl, arrays);
+    const vertexArrayInfo = createVertexArrayInfo(this.gl, this.quadBrush.shader.programInfo, info);
+  
+    const uniforms = {
+      u_lightDir: v3.normalize([1, 8, -30]),
+    };
+
+    this.model = {
+      count,
+      max,
+      material: this.quadBrush.shader.programInfo,
+      arrays,
+      info,
+      uniforms,
+      vertexArrayInfo
+    };
 
     this.renderCallback = (time) => {
       this.time = time;
@@ -362,22 +412,46 @@ export class Renderer {
   }
   render() {
     let gl = this.gl;
+
+    let time = this.time / 10000;
+
     resizeCanvasToDisplaySize(this.canvas);
     this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 
     gl.enable(gl.DEPTH_TEST);
-    gl.enable(gl.CULL_FACE);
+    // gl.enable(gl.CULL_FACE);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    // this.model.uniforms.time = this.time * 0.001;
-    // this.model.uniforms.resolution[0] = this.canvas.width;
-    // this.model.uniforms.resolution[1] = this.canvas.height;
+    const fov = 30 * Math.PI / 180;
+    const aspect = gl.canvas.width / gl.canvas.height;
+    const zNear = 0.5;
+    const zFar = 500;
+    const projection = m4.perspective(fov, aspect, zNear, zFar);
+    const eye = [
+      0, 0, 1
+      // Math.sin(speed) * radius, 
+      // Math.sin(speed * .7) * 10, 
+      // Math.cos(speed) * radius,
+    ];
+    const target = [0, 0, 0];
+    const up = [0, 1, 0];
 
-    // this.gl.useProgram(this.model.material.program);
+    const camera = m4.lookAt(eye, target, up);
+    const view = m4.inverse(camera);
+    const viewProjection = m4.multiply(projection, view);
+    const world = m4.rotationY(time);
 
-    // setBuffersAndAttributes(this.gl, this.model.material, this.model.info);
-    // setUniforms(this.model.material, this.model.uniforms);
-    // drawBufferInfo(this.gl, this.model.info);
+    this.model.uniforms.u_viewProjection = viewProjection;
+
+    gl.useProgram(this.model.material.program);
+    setBuffersAndAttributes(gl, this.model.material, this.model.vertexArrayInfo);
+    setUniforms(this.model.material, this.model.uniforms);
+
+    this.model.count -= 10;
+    if (this.model.count < 1) this.model.count = this.model.max;
+
+    gl.drawElementsInstanced(gl.TRIANGLES, this.model.vertexArrayInfo.numElements, gl.UNSIGNED_SHORT, 0, this.model.count);//this.model.max);
+
 
     this.quadBrush.render(this.gl);
   }
