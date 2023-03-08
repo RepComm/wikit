@@ -24,3 +24,10 @@ export class API {
     return `./addons/${addonId}/`;
   }
 }
+export function rand(min, max) {
+  if (max === undefined) {
+    max = min;
+    min = 0;
+  }
+  return min + Math.random() * (max - min);
+}

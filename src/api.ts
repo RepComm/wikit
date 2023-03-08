@@ -118,3 +118,11 @@ export interface AddonInit {
 export interface AddonMain {
   init: AddonInit;
 }
+
+export function rand (min: number, max?: number): number {
+  if (max === undefined) {
+    max = min;
+    min = 0;
+  }
+  return min + (Math.random() * (max - min));
+}
