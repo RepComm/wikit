@@ -1,5 +1,7 @@
 import { createBufferInfoFromArrays, createProgramInfo, setBuffersAndAttributes, setUniforms, m4, primitives, createVertexArrayInfo, resizeCanvasToDisplaySize, addExtensionsToContext, v3 } from "twgl.js";
-import { Transform, Vector3 } from "./transform.js";
+import { Camera } from "./camera.js";
+import { Transform } from "./transform.js";
+import { Vector3 } from "./vector.js";
 export class Shader {
   set vertexSource(src) {
     this._vertexSource = src;
@@ -176,6 +178,7 @@ export class Renderer {
     this.canvas = canvas;
     this.gl = this.canvas.getContext("webgl2");
     addExtensionsToContext(this.gl);
+    this.camera = new Camera();
     this.time = Date.now();
     this.quadBrush = new InstanceableModel();
     this.quadBrush.shader = new Shader(`
@@ -298,24 +301,10 @@ export class Renderer {
     gl.enable(gl.DEPTH_TEST);
     // gl.enable(gl.CULL_FACE);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    const fov = 30 * Math.PI / 180;
-    const aspect = gl.canvas.width / gl.canvas.height;
-    const zNear = 0.5;
-    const zFar = 500;
-    const projection = m4.perspective(fov, aspect, zNear, zFar);
-    const eye = [0, 0, 1
-    // Math.sin(speed) * radius, 
-    // Math.sin(speed * .7) * 10, 
-    // Math.cos(speed) * radius,
-    ];
-
-    const target = [0, 0, 0];
-    const up = [0, 1, 0];
-    const camera = m4.lookAt(eye, target, up);
-    const view = m4.inverse(camera);
-    const viewProjection = m4.multiply(projection, view);
-    const world = m4.rotationY(time);
-    this.model.uniforms.u_viewProjection = viewProjection;
+    this.camera.perspectiveSettings.aspectRatio = gl.canvas.width / gl.canvas.height;
+    this.camera.transform.position.z = Math.sin(time) * 10;
+    this.camera.render();
+    this.model.uniforms.u_viewProjection = this.camera.viewProjectionMatrix.data;
     gl.useProgram(this.model.material.program);
     setBuffersAndAttributes(gl, this.model.material, this.model.vertexArrayInfo);
     setUniforms(this.model.material, this.model.uniforms);
