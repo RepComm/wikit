@@ -44,8 +44,16 @@ export class Renderer {
     `);
     this.quadBrush.shader.build(this.gl);
     for (let i = 0; i < this.quadBrush.max - 1; i++) {
-      this.quadBrush.instance().transform.setPos(rand(-50, 50), rand(-50, 50), rand(-50, 50)).setEuler(rand(-Math.PI, Math.PI), rand(-Math.PI, Math.PI), rand(-Math.PI, Math.PI)).setScale(rand(1, 4), rand(1, 4), rand(1, 4));
+      let splat = this.quadBrush.instance();
+      splat.color[0] = rand(1);
+      splat.color[1] = rand(1);
+      splat.color[2] = rand(1);
+      splat.transform.setPos(rand(-50, 50), rand(-50, 50), rand(-50, 50)).setEuler(rand(-Math.PI, Math.PI), rand(-Math.PI, Math.PI), rand(-Math.PI, Math.PI)).setScale(rand(1, 4), rand(1, 4), rand(1, 4));
     }
+    setTimeout(() => {
+      console.log("update brush models");
+      this.quadBrush.updateAllInstances();
+    }, 5000);
     const max = 10000;
     let count = max;
     const matrixWorlds = new Float32Array(max * 16);

@@ -41,6 +41,9 @@ export class InstanceableModel {
   get bufferInfo() {
     if (this.isOriginal) return this._bufferInfo;else return this.original._bufferInfo;
   }
+  get bufferInfoNeedsBuilt() {
+    return this._bufferInfo === undefined || this._bufferInfoNeedsBuilt;
+  }
   get vertexArrayInfo() {
     if (this.isOriginal) return this._vertexArrayInfo;else return this.original._vertexArrayInfo;
   }
@@ -102,11 +105,8 @@ export class InstanceableModel {
         // u_viewProjection: undefined,
         u_lightDir: new Vector3(1, 8, -30).normalize().data
       };
-
-      // this.updateAllInstances();
     }
   }
-
   copyColorToBuffer(buffer, offset = 0) {
     buffer[0 + offset] = this.color[0];
     buffer[1 + offset] = this.color[1];
@@ -127,15 +127,31 @@ export class InstanceableModel {
       inst.copyColorToBuffer(this._colors, colorFloatOffset);
       i++;
     }
+
+    // Object.assign(this._arrays, {
+    //   instanceWorld: { //as appears in shader
+    //     numComponents: 16,
+    //     data: this._worldMatricies,
+    //     divisor: 1,
+    //   },
+    //   instanceColor: {
+    //     numComponents: 3,
+    //     data: this._colors,
+    //     divisor: 1,
+    //   },
+    // });
+
+    this._bufferInfoNeedsBuilt = true;
   }
   render(gl, u_viewProjection) {
     if (!this.isOriginal) return;
     if (this.shader.needsBuilt) this.shader.build(gl); //handle create/updates of shader
 
-    if (!this._bufferInfo) {
-      this._bufferInfo = createBufferInfoFromArrays(gl, this._arrays);
+    if (this.bufferInfoNeedsBuilt) {
+      this._bufferInfo = createBufferInfoFromArrays(gl, this._arrays, this._bufferInfo); //pass in original buffer info if present, undefined is ignored
       this._vertexArrayInfo = createVertexArrayInfo(gl, this._shader.programInfo, this.bufferInfo);
       console.log("Created buffer info and vertex info", this);
+      this._bufferInfoNeedsBuilt = false;
     }
 
     //use underscores here because we already checked if we're the original, and speed purposes
