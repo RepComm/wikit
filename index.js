@@ -160,14 +160,15 @@ async function main() {
   let menubar = ui.create("div", "menu-bar").mount(splitV).e;
   ui.create("span", "title").textContent("WIKit").mount(menubar);
   let menuItemsContainer = ui.create("div").mount(menubar);
+  let accountIFrame = ui.create("iframe", "account-iframe").mount(document.body).e;
+  accountIFrame.src = "https://market.webimagekit.net/index.php/shop/";
   let accountBtn = ui.create("div", "account-button", "top-button").on("click", evt => {
     let bottom = ui.ref(accountBtn).getRect().bottom;
-    let iframe = ui.create("iframe", "account-iframe").style({
+    ui.ref(accountIFrame).style({
       display: "unset",
       left: `${evt.clientX - 500}px`,
       top: `${bottom}px`
-    }).mount(document.body).e;
-    iframe.src = "https://market.webimagekit.net";
+    });
   }).mount(menubar).e;
   let githubBtn = ui.create("div", "github-button", "top-button").on("click", evt => {}).mount(menubar);
   let splitH = ui.create("div", "below-menu").classes("split-hor").mount(splitV).e;
