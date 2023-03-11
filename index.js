@@ -131,6 +131,27 @@ async function main() {
       textAlign: "center",
       lineHeight: "2em",
       margin: "1px"
+    },
+    "#account-button": {
+      backgroundImage: "url(./textures/account-icon.svg)"
+    },
+    "#github-button": {
+      backgroundImage: "url(./textures/gh-icon.svg)"
+    },
+    ".top-button": {
+      maxWidth: "3em",
+      backgroundSize: "90% 90%",
+      backgroundPosition: "50% 50%",
+      backgroundRepeat: "no-repeat",
+      marginRight: "1em",
+      cursor: "pointer"
+    },
+    "#account-iframe": {
+      position: "absolute",
+      display: "none",
+      width: "500px",
+      height: "400px",
+      borderRadius: "1em"
     }
   }).mount(document.head);
   ui.create("div").id("container").mount(document.body);
@@ -138,6 +159,17 @@ async function main() {
   let splitV = ui.create("div").classes("split-ver").mount(container).e;
   let menubar = ui.create("div", "menu-bar").mount(splitV).e;
   ui.create("span", "title").textContent("WIKit").mount(menubar);
+  let menuItemsContainer = ui.create("div").mount(menubar);
+  let accountBtn = ui.create("div", "account-button", "top-button").on("click", evt => {
+    let bottom = ui.ref(accountBtn).getRect().bottom;
+    let iframe = ui.create("iframe", "account-iframe").style({
+      display: "unset",
+      left: `${evt.clientX - 500}px`,
+      top: `${bottom}px`
+    }).mount(document.body).e;
+    iframe.src = "https://market.webimagekit.net";
+  }).mount(menubar).e;
+  let githubBtn = ui.create("div", "github-button", "top-button").on("click", evt => {}).mount(menubar);
   let splitH = ui.create("div", "below-menu").classes("split-hor").mount(splitV).e;
   let tools = ui.create("div", "tools").mount(splitH).e;
   let editor = ui.create("div", "editor").mount(splitH).e;
