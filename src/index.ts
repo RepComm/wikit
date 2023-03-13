@@ -149,12 +149,13 @@ async function main() {
       marginRight: "1em",
       cursor: "pointer"
     },
-    "#account-iframe": {
+    "#account-popup": {
       position: "absolute",
       display: "none",
-      width: "500px",
+      // width: "500px",
       height: "400px",
-      borderRadius: "1em"
+      borderRadius: "1em",
+      backgroundColor: "#222020f5"
     }
   }).mount(document.head);
 
@@ -167,18 +168,36 @@ async function main() {
   ui.create("span", "title").textContent("WIKit").mount(menubar);
   let menuItemsContainer = ui.create("div").mount(menubar);
 
-  let accountIFrame = ui.create("iframe", "account-iframe").mount(document.body).e;
-  accountIFrame.src = "https://market.webimagekit.net/index.php/shop/";
+  let subscriberButtons = document.getElementById("subscribe-buttons");
+  let accountPopup = ui.create("div", "account-popup").mount(document.body).style({display: "none"}).e;
+  ui.ref(subscriberButtons).mount(accountPopup);
 
   let accountBtn = ui.create("div", "account-button", "top-button")
   .on("click", (evt)=>{
-    let bottom = ui.ref(accountBtn).getRect().bottom;
-    ui.ref(accountIFrame)
-    .style({
-      display: "unset",
-      left: `${evt.clientX - 500}px`,
-      top: `${bottom}px`
+    
+    if (accountPopup.style.display !== "none") {
+      accountPopup.style.display = "none";
+      return;
+    }
+
+    ui.style({
+      display: "unset"
     });
+
+    let btnRect = ui.ref(accountBtn).getRect();
+    console.log(btnRect);
+    
+    ui.ref(accountPopup);
+    let popupRect = ui.getRect();
+
+    let top = `${btnRect.bottom}px`;
+    let left = `${btnRect.right - popupRect.width}px`;
+
+    ui.style({
+      left,
+      top
+    });
+
   }).mount(menubar).e;
 
   let githubBtn = ui.create("div", "github-button", "top-button")

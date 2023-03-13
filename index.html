@@ -14,8 +14,17 @@
       }
     }
     </script>
+
+    <script async src="https://js.stripe.com/v3/buy-button.js"></script>
   </head>
   <body>
     <script type="module" src="./index.js"></script>
+    <div id="subscribe-buttons">
+      <stripe-buy-button
+        buy-button-id="buy_btn_1Mky3wKNn4V9HthoJZFOYcpL"
+        publishable-key="pk_test_51MktKJKNn4V9HthoD37lLj8t2CpiNmopb6zIr3UwPz9liDS0V4L5LDPJhC41VuGecDS9H2nXOmBHUm5bJkF1mKwe00gbHuxRjo"
+      >
+      </stripe-buy-button>
+    </div>
   </body>
 </html>

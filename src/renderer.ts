@@ -69,7 +69,8 @@ export class Renderer {
     void main() {
       vec3 a_normal = normalize(v_normal);
       float light = dot(u_lightDir, a_normal) * .5 + .5;
-      gl_FragColor = vec4(v_color.rgb * light, v_color.a);
+      gl_FragColor = v_color;
+      // gl_FragColor = vec4(v_color.rgb * light, v_color.a);
     }
     `);
 
